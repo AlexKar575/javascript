@@ -33,25 +33,27 @@
     
     <a href="https://alexkar575.github.io/javascript/" id="numberLink">Получить число</a>
 
-      <script>
+    <script>
         "use strict";
 
-        // Функция ввода и проверки числа, возвращающая true или false
+        // Функция ввода и проверки числа с циклом внутри
         function checkNumber() {
-            let number = prompt("Пожалуйста, введите число больше 100:", "");
-            
-            // Если нажат Cancel (ESC)
-            if (number === null) {
-                return false;
+            while (true) {
+                let number = prompt("Пожалуйста, введите число больше 100:", "");
+                
+                // 1. Если нажат Cancel или ESC -> цикл прерывается, возвращаем false
+                if (number === null) {
+                    return false;
+                }
+                
+                // 2. Если введено верное число > 100 -> цикл прерывается, возвращаем true
+                if (number.trim() !== "" && !isNaN(number) && Number(number) > 100) {
+                    return true;
+                }
+                
+                // 3. Если число <= 100 или введены буквы -> цикл продолжается снова
+                alert("Нужно ввести число больше 100!");
             }
-            
-            // Если введено верное число > 100, возвращаем true
-            if (number.trim() !== "" && !isNaN(number) && Number(number) > 100) {
-                return true;
-            }
-            
-            // Во всех остальных случаях (число <= 100 или буквы) возвращаем false
-            return false;
         }
 
         // Обработчик клика по гиперссылке
@@ -60,17 +62,17 @@
             
             let link = this.href;
             
-            // Если функция вернула true — сразу переходим
+            // Запускаем функцию проверки
             if (checkNumber()) {
+                // Если функция вернула true (ввели > 100) — переходим
                 window.location.href = link;
             } else {
-                // Если false (нажали Cancel ИЛИ ввели число меньше 100) — спрашиваем разрешение
-                if (confirm("Вы не ввели нужное число. Хотите продолжить переход?")) {
+                // Если функция вернула false (нажали Cancel) — спрашиваем разрешение
+                if (confirm("Вы отменили ввод. Хотите продолжить переход на главную страницу?")) {
                     window.location.href = link;
                 }
             }
         });
     </script>
-
 </body>
 </html>
