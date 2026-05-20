@@ -36,38 +36,37 @@
     <script>
         "use strict";
 
-        // Функция ввода и проверки числа с циклом внутри
+      
         function checkNumber() {
             while (true) {
                 let number = prompt("Пожалуйста, введите число больше 100:", "");
                 
-                // 1. Если нажат Cancel или ESC -> цикл прерывается, возвращаем false
+          
                 if (number === null) {
                     return false;
                 }
-                
-                // 2. Если введено верное число > 100 -> цикл прерывается, возвращаем true
+           
                 if (number.trim() !== "" && !isNaN(number) && Number(number) > 100) {
                     return true;
                 }
                 
-                // 3. Если число <= 100 или введены буквы -> цикл продолжается снова
+      
                 alert("Нужно ввести число больше 100!");
             }
         }
 
-        // Обработчик клика по гиперссылке
+
         document.getElementById('numberLink').addEventListener('click', function(event) {
-            event.preventDefault(); // Отменяем стандартный переход
+            event.preventDefault();
             
             let link = this.href;
             
-            // Запускаем функцию проверки
+          
             if (checkNumber()) {
-                // Если функция вернула true (ввели > 100) — переходим
+
                 window.location.href = link;
             } else {
-                // Если функция вернула false (нажали Cancel) — спрашиваем разрешение
+               
                 if (confirm("Вы отменили ввод. Хотите продолжить переход на главную страницу?")) {
                     window.location.href = link;
                 }
