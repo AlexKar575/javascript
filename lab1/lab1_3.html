@@ -35,30 +35,43 @@
 
     <script>
         "use strict";
-        document.getElementById('numberLink').addEventListener('click', function(event) {
-            event.preventDefault();
-            
-            let number;
-            let link = this.href;
-            
+
+        // Функция ввода и проверки числа, возвращающая true или false
+        function checkNumber() {
             while (true) {
-                number = prompt("Пожалуйста, введите число больше 100:", "");
+                let number = prompt("Пожалуйста, введите число больше 100:", "");
                 
-                // Если нажали Cancel или ESC
+                // Пользователь нажал Cancel или ESC (функция возвращает false)
                 if (number === null) {
-                    if (confirm("Вы не ввели число. Хотите продолжить переход?")) {
-                        window.location.href = link;
-                    }
-                    return;
+                    return false;
                 }
-                if (!isNaN(number) && Number(number) > 100) {
-                    window.location.href = link;
-                    return;
+                
+                // Проверка на корректность и условие > 100 (функция возвращает true)
+                if (number.trim() !== "" && !isNaN(number) && Number(number) > 100) {
+                    return true;
                 }
                 
                 alert("Нужно ввести число больше 100!");
             }
+        }
+
+        // Обработчик клика по гиперссылке
+        document.getElementById('numberLink').addEventListener('click', function(event) {
+            event.preventDefault(); // Отменяем стандартный переход по ссылке
+            
+            let link = this.href;
+            
+            // Если функция возвращает true, то происходит переход по ссылке
+            if (checkNumber()) {
+                window.location.href = link;
+            } else {
+                // Иначе запрашивается разрешение через confirm
+                if (confirm("Вы не ввели число. Хотите продолжить переход на главную страницу?")) {
+                    window.location.href = link;
+                }
+            }
         });
     </script>
+
 </body>
 </html>
