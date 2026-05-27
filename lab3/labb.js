@@ -1,6 +1,6 @@
 'use strict';
 
-// --- Функции из предыдущего задания (lab2.js), преобразованные в модуль ---
+// --- Функции из предыдущего задания (Задание 2) ---
 
 /**
  * Возвращает x, возведённое в n-ную степень.
@@ -42,7 +42,7 @@ export function isLeapYear(year) {
  * @returns {bigint} Факториал числа n.
  */
 export function factorial(n) {
-  if (n <= 1) return 1n; // Условие для n=1
+  if (n <= 1) return 1n; // Условие для n=1 и ниже
   return BigInt(n) * factorial(n - 1);
 }
 
@@ -81,7 +81,7 @@ export function sum(...args) {
 }
 
 
-// --- Новые функции по вашим текущим заданиям ---
+// --- Новые функции по текущим заданиям ---
 
 /**
  * Возвращает дробную часть числа.
@@ -90,7 +90,7 @@ export function sum(...args) {
  * @returns {number} Дробная часть.
  */
 export function getDecimal(num) {
-    const fracPart = Math.abs(num % 1); // Получаем дробную часть как положительное число
+    const fracPart = Math.abs(num % 1); // Получаем модуль дробной части
     return num >= 0 ? fracPart : 1 - fracPart; // Корректируем для отрицательных чисел
 }
 
@@ -131,17 +131,24 @@ export function truncate(str, maxlength) {
 
 /**
  * Преобразует строку с дефисами в camelCase.
+ * Безопасно обрабатывает пустые строки после split().
  * @param {string} str - Строка вида 'my-short-string'.
  * @returns {string} Строка вида 'myShortString'.
  */
 export function camelize(str) {
-    return str.split('-').map((word, index) =>
-        index === 0 ? word : word[0].toUpperCase() + word.slice(1)
-    ).join('');
+    return str.split('-').map((word, index) => {
+        // Если это первое слово или текущее слово пустое, оставляем как есть
+        if (index === 0 || word === '') {
+            return word;
+        }
+        // Для остальных слов: первая буква заглавная, остальное как было
+        return word[0].toUpperCase() + word.slice(1);
+    }).join('');
 }
 
 /**
  * Возвращает массив чисел Фибоначчи до n-го элемента.
+ * Использует импортированную функцию fib().
  * @param {number} n - Количество элементов в последовательности.
  * @returns {Array<bigint>} Массив чисел Фибоначчи.
  */
