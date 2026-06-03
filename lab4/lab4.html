@@ -104,16 +104,33 @@
             });
         });
 
-        // --- Блок тестов для функции isEmpty ---
-        describe("Функция isEmpty", function () {
-            it("должна вернуть true для пустого объекта", function () {
-                assert.isTrue(isEmpty({}));
-            });
+<!-- Начало блока тестов -->
+describe("Функция isEmpty", function () {
+    it("должна вернуть true для пустого объекта", function () {
+        const emptyObj = {};
+        assert.isTrue(isEmpty(emptyObj)); // Ожидается true
+    });
 
-            it("должна вернуть false для непустого объекта", function () {
-                assert.isFalse(isEmpty({ key: 'value' }));
-            });
-        });
+    it("должна вернуть false для объекта с обычным свойством", function () {
+        const objWithKey = { name: 'test' };
+        assert.isFalse(isEmpty(objWithKey)); // Ожидается false
+    });
+
+    it("должна вернуть false для объекта с символом", function () {
+        const sym = Symbol('my-symbol');
+        const objWithSym = {[sym]: 'value'};
+        
+        // Проверяем, что обычный цикл for-in не видит символ
+        let hasProps = false;
+        for (let prop in objWithSym) {
+            hasProps = true;
+        }
+        assert.isFalse(hasProps); // Обычная итерация ничего не нашла
+
+        // Но наша функция должна учитывать символы
+        assert.isFalse(isEmpty(objWithSym)); // Ожидается false
+    });
+});
 
         // --- Блок тестов для методов addClass / removeClass ---
         describe("Методы addClass и removeClass", function () {
