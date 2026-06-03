@@ -170,3 +170,7 @@ console.log("Секунд с начала дня:", getSecondsToday());
 console.log("Форматированная дата:", formatDate(new Date()));
 document.getElementById('task6').textContent = `Секунд с начала дня: ${getSecondsToday()}
 Форматированная дата: ${formatDate(new Date())}`;
+window.Book = Book;
+window.isEmpty = isEmpty;
+window.getSecondsToday = getSecondsToday;
+window.formatDate = formatDate;
