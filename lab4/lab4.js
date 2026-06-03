@@ -6,19 +6,6 @@ class Book {
         this.price = price;
     }
 
-    // Геттер для получения заголовка книги
-    get title() {
-        return this._title;
-    }
-
-    // Сеттер для установки заголовка книги
-    set title(value) {
-        if (value === "") {
-            throw new Error("Заголовок не может быть пустым");
-        }
-        this._title = value;
-    }
-
     // Геттер для получения года публикации книги
     get pubYear() {
         return this._pubYear;
