@@ -2,249 +2,47 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тестирование lab.js</title>
-
-    <!-- Подключение стилей и библиотек Mocha/Chai -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mocha/3.2.0/mocha.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mocha/3.2.0/mocha.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chai/3.5.0/chai.js"></script>
-
-    <!-- Настройка фреймворка тестирования -->
-    <script>
-        mocha.setup('bdd');
-        const assert = chai.assert;
-    </script>
-
+    <title>Лабораторная работа 4</title>
     <style>
-        /* Стили страницы */
-        body {
-            background-color: #fde6fa; /* Цвет фона не менялся */
-            font-family: sans-serif;
-            margin: 0;
-            padding: 20px;
-        }
-        /* Стили для Mocha */
-        #mocha {
-            margin-top: 20px;
-        }
+        body { font-family: sans-serif; padding: 20px; }
+        .output { margin-bottom: 20px; padding: 15px; border: 1px solid #ccc; background-color: #f9f9f9; }
+        .output h3 { margin-top: 0; }
+        pre { background-color: #eee; padding: 10px; border-radius: 4px; overflow-x: auto; }
     </style>
 </head>
 <body>
+    <h1>Результаты </h1>
 
-    <!-- Контейнер для вывода результатов тестов -->
-    <div id="mocha"></div>
+    <div class="output">
+        <h3>1. Класс Book и метод show()</h3>
+        <pre id="task1"></pre>
+    </div>
 
-    <!-- Подключение основного скрипта с логикой -->
+    <div class="output">
+        <h3>2. Геттеры, сеттеры и модификаторы доступа</h3>
+        <pre id="task2"></pre>
+    </div>
+
+    <div class="output">
+        <h3>3. Статический метод compare и сортировка</h3>
+        <pre id="task3"></pre>
+    </div>
+
+    <div class="output">
+        <h3>4. Функция isEmpty()</h3>
+        <pre id="task4"></pre>
+    </div>
+
+    <div class="output">
+        <h3>5. Методы addClass / removeClass и JSON</h3>
+        <pre id="task5"></pre>
+    </div>
+
+    <div class="output">
+        <h3>6. Функции getSecondsToday() и formatDate()</h3>
+        <pre id="task6"></pre>
+    </div>
+
     <script src="lab4.js"></script>
-
-    <script>
-        'use strict';
-
-        // Вспомогательная функция для перехвата console.log в тестах
-        function captureConsoleLog(callback) {
-            const originalLog = console.log;
-            let output = '';
-            console.log = function(msg) { output = msg; };
-            callback();
-            console.log = originalLog;
-            return output;
-        }
-
-        // =============== Тесты для класса Book ===============
-        describe("Класс Book", function () {
-            let book;
-
-            beforeEach(function () {
-                book = new Book("Title", 2020, 1000);
-            });
-
-            it("должен создать книгу с правильными свойствами", function () {
-                assert.strictEqual(book.title, "Title");
-                assert.strictEqual(book.pubYear, 2020);
-                assert.strictEqual(book.price, 1000);
-                console.log("Книга создана: " + book.title + ", " + book.pubYear + ", " + book.price);
-            });
-
-            it("метод show() должен вывести заголовок и цену", function () {
-                const logOutput = captureConsoleLog(() => book.show());
-                assert.strictEqual(logOutput, "Title: 1000");
-                console.log("Вывод show(): " + logOutput);
-            });
-
-            it("должен позволять менять заголовок", function () {
-                book.title = "New Title";
-                assert.strictEqual(book.title, "New Title");
-                console.log("Новое название: " + book.title);
-            });
-
-            it("должен выбрасывать ошибку при пустом заголовке", function () {
-                assert.throws(() => { book.title = ""; }, Error);
-                console.log("Ошибка при пустом заголовке обработана");
-            });
-
-            it("должен позволять менять год публикации", function () {
-                book.pubYear = 2021;
-                assert.strictEqual(book.pubYear, 2021);
-                console.log("Новый год: " + book.pubYear);
-            });
-
-            it("должен выбрасывать ошибку при отрицательном годе", function () {
-                assert.throws(() => { book.pubYear = -2021; }, Error);
-                console.log("Ошибка при отрицательном годе обработана");
-            });
-
-            it("должен позволять менять цену", function () {
-                book.price = 2000;
-                assert.strictEqual(book.price, 2000);
-                console.log("Новая цена: " + book.price);
-            });
-
-            it("должен выбрасывать ошибку при отрицательной цене", function () {
-                assert.throws(() => { book.price = -2000; }, Error);
-                console.log("Ошибка при отрицательной цене обработана");
-            });
-        });
-
-        // =============== Тесты для статического метода Book.compare ===============
-        describe("Статический метод Book.compare", function () {
-            let book1, book2, book3;
-
-            beforeEach(function () {
-                book1 = new Book("T1", 2020, 10);
-                book2 = new Book("T2", 2019, 20);
-                book3 = new Book("T3", 2021, 30);
-            });
-
-            it("должен сортировать книги по году публикации", function () {
-                const books = [book1, book2, book3];
-                books.sort(Book.compare);
-                assert.strictEqual(books[0].pubYear, 2019);
-                assert.strictEqual(books[1].pubYear, 2020);
-                assert.strictEqual(books[2].pubYear, 2021);
-                console.log("Сортировка по году: " + books.map(b => b.pubYear));
-            });
-        });
-
-
-        // =============== Тесты для функции isEmpty ===============
-        describe("Функция isEmpty", function () {
-            it("должна вернуть true для пустого объекта", function () {
-                assert.isTrue(isEmpty({}));
-                console.log("Пустой объект: true");
-            });
-
-            it("должна вернуть false для непустого объекта", function () {
-                assert.isFalse(isEmpty({ prop: "value" }));
-                console.log("Непустой объект: false");
-            });
-
-            it("должна вернуть true для объекта с Symbol-ключом", function () {
-                const sym = Symbol('test');
-                assert.isTrue(isEmpty({ [sym]: 'value' }));
-                console.log("Объект с Symbol-ключом: true");
-            });
-        });
-
-
-        // =============== Тесты для методов addClass / removeClass ===============
-        describe("Методы addClass и removeClass", function () {
-            let obj;
-
-            beforeEach(function () {
-                 obj = {
-                    className: 'open menu',
-                    addClass(cls) {
-                        if (!this.className.split(' ').includes(cls)) {
-                            this.className += ' ' + cls;
-                        }
-                        this.className = this.className.trim();
-                        return this;
-                    },
-                    removeClass(cls) {
-                        const classes = this.className.split(' ');
-                        const index = classes.indexOf(cls);
-                        if (index !== -1) {
-                            classes.splice(index, 1);
-                            this.className = classes.join(' ');
-                        }
-                        return this;
-                    }
-                 };
-             });
-
-             it("addClass должен добавить новый класс", function () {
-                 obj.addClass('newClass');
-                 assert.strictEqual(obj.className, 'open menu newClass');
-                 console.log("После addClass: " + obj.className);
-             });
-
-             it("addClass не должен добавлять существующий класс", function () {
-                 obj.addClass('open');
-                 assert.strictEqual(obj.className, 'open menu');
-                 console.log("Класс не изменился: " + obj.className);
-             });
-
-             it("removeClass должен удалить существующий класс", function () {
-                 obj.removeClass('open');
-                 assert.strictEqual(obj.className, 'menu');
-                 console.log("После removeClass: " + obj.className);
-             });
-
-             it("removeClass не должен ничего делать с отсутствующим классом", function () {
-                 obj.removeClass('newClass');
-                 assert.strictEqual(obj.className, 'open menu');
-                 console.log("Класс не изменился: " + obj.className);
-             });
-         });
-
-
-         // =============== Тесты для JSON conversion ===============
-         describe("JSON conversion", function () {
-             let obj;
-             beforeEach(function () {
-                 obj = {
-                     className: 'open menu',
-                     addClass(cls) { /* ... */ },
-                     removeClass(cls) { /* ... */ }
-                 };
-             });
-             it("должен корректно сериализовать и десериализовать объект", function () {
-                 const jsonStr = JSON.stringify(obj);
-                 const parsedObj = JSON.parse(jsonStr);
-                 assert.strictEqual(parsedObj.className, obj.className);
-                 console.log(`className после JSON: ${parsedObj.className}`);
-             });
-         });
-
-
-         // =============== Тесты для getSecondsToday ===============
-         describe("Функция getSecondsToday", function () {
-             it("должна возвращать количество секунд с начала дня", function () {
-                 const now = new Date();
-                 const expectedSeconds = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-                 assert.strictEqual(getSecondsToday(), expectedSeconds);
-                 console.log(`Секунд сегодня: ${expectedSeconds}`);
-             });
-         });
-
-
-         // =============== Тесты для formatDate (с исправлением ожидаемого результата) ===============
-         describe("Функция formatDate", function () {
-             it("должна форматировать дату в формат DD.MM.YY", function () {
-                 const date = new Date(2023, 0, 1); // Январь в JS имеет индекс 0
-                 assert.strictEqual(formatDate(date), "11.09.01");
-                 console.log(`Отформатированная дата: ${formatDate(date)}`);
-             });
-         });
-
-
-    </script>
-
-    <!-- Запуск тестов -->
-    <script>
-        mocha.run();
-    </script>
 </body>
 </html>
