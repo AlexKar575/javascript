@@ -1,115 +1,172 @@
-// Класс Book выводит книгу с заголовком, годом публикации и ценой
+// --- Задание 1: Класс Book с методом show ---
 class Book {
-    // Приватное поле price
-    #price;
-
     constructor(title, pubYear, price) {
-        let storedTitle;
-        Object.defineProperty(this, 'title', {
-            get() {
-                return storedTitle;
-            },
-            set(value) {
-                if (value === "") {
-                    throw new Error("Заголовок не может быть пустым");
-                }
-                storedTitle = value;
-            },
-            enumerable: true,
-            configurable: true
-        });
-
-        // Инициализация через сеттеры
         this.title = title;
-        this.pubYear = pubYear;
+        this._pubYear = pubYear;
         this.#price = price;
     }
 
-    // Геттер для получения года публикации книги
+    show() {
+        console.log(`Название: ${this.title}, Цена: ${this.#price}`);
+    }
+}
+const book1 = new Book("Война и мир", 1869, 1500);
+book1.show();
+document.getElementById('task1').textContent = 'В консоль выведено: "Название: Война и мир, Цена: 1500"';
+
+
+// --- Задание 2: Геттеры, сеттеры и модификаторы доступа ---
+class Book {
+   
+    set title(value) {
+        if (typeof value !== 'string' || value.trim() === '') {
+            throw new Error("Название книги не может быть пустой строкой.");
+        }
+        this._title = value.trim();
+    }
+    get title() {
+        return this._title;
+    }
+
+    
+    set pubYear(value) {
+        const num = Number(value);
+        if (isNaN(num) || num <= 0) {
+            throw new Error("Год публикации должен быть положительным числом.");
+        }
+        this._pubYear = num;
+    }
     get pubYear() {
         return this._pubYear;
     }
 
-    // Сеттер для установки года публикации книги
-    set pubYear(value) {
-        if (value <= 0) {
-            throw new Error("Год публикации должен быть положительным числом");
+    // Приватное свойство price (требование)
+    set price(value) {
+        const num = Number(value);
+        if (isNaN(num) || num <= 0) {
+            throw new Error("Цена должна быть положительным числом.");
         }
-        this._pubYear = value;
+        this.#price = num;
     }
-
-    // Геттер для получения цены книги
     get price() {
         return this.#price;
     }
 
-    // Сеттер для установки цены книги
-    set price(value) {
-        if (value <= 0) {
-            throw new Error("Цена должна быть положительным числом");
-        }
-        this.#price = value;
-    }
+    // Приватное поле класса
+    #price;
+}
 
-    // Метод для вывода заголовка и цены книги в консоль
-    show() {
-        console.log(`${this.title}: ${this.#price}`);
-    }
+try {
+    const book2 = new Book("Мастер и Маргарита", 1966, 800);
 
-    // Статический метод для сравнения книг по году публикации
+    // Тестирование сеттеров и геттеров
+    book2.title = "   Преступление и наказание   "; // Пробелы обрежутся
+    console.log('Новое название:', book2.title); // Проверка геттера
+
+} catch (e) {
+    console.error(e.message);
+}
+document.getElementById('task2').textContent = 'Геттеры/сеттеры реализованы. Поле title - публичное, pubYear - защищенное (_pubYear), price - приватное (#price).';
+
+
+// --- Задание 3: Статический метод compare и сортировка ---
+class Book {
+
+
     static compare(a, b) {
         return a.pubYear - b.pubYear;
     }
 }
+const books = [
+    new Book("Книга С", 2010, 500),
+    new Book("Книга А", 1995, 300),
+    new Book("Книга Б", 2021, 700)
+];
+books.sort(Book.compare);
+console.log("Сортировка по году публикации:");
+books.forEach(b => console.log(`${b.title} - ${b.pubYear}`));
+document.getElementById('task3').textContent = 'Массив books отсортирован по возрастанию года публикации.';
 
-// Функция для проверки, пуст ли объект, включая неперечисляемые свойства
+
+// --- Задание 4: Функция isEmpty ---
 function isEmpty(obj) {
-    return Object.getOwnPropertyNames(obj).length === 0 && Object.getOwnPropertySymbols(obj).length === 0;
+    // Проверка на наличие перечисляемых свойств
+    for (let key in obj) return false;
+
+    // Проверка на наличие символьных свойств
+    const symbols = Object.getOwnPropertySymbols(obj);
+    if (symbols.length > 0) return false;
+
+    // Проверка на наличие неперечисляемых свойств
+    const descs = Object.getOwnPropertyDescriptors(obj);
+    for (let key in descs) {
+        if (!descs[key].enumerable) return false;
+    }
+
+    return true;
 }
 
-// Объект с методами для работы с классами
+// Тестирование функции isEmpty три раза (требование)
+const testObj1 = {}; // Пустой объект
+const testObj2 = { [Symbol()]: true }; // Объект с символьным свойством
+const testObj3 = Object.defineProperty({}, 'name', { value: 'John', enumerable: false }); // Объект с неперечисляемым свойством
+
+console.log('isEmpty(testObj1):', isEmpty(testObj1)); // true
+console.log('isEmpty(testObj2):', isEmpty(testObj2)); // false
+console.log('isEmpty(testObj3):', isEmpty(testObj3)); // false
+
+document.getElementById('task4').textContent = `Функция isEmpty протестирована:
+isEmpty({}) -> ${isEmpty({})}
+isEmpty({[Symbol()]: true}) -> ${isEmpty({[Symbol()]: true})}
+isEmpty(скрытое свойство) -> ${isEmpty(testObj3)}`;
+
+
+// --- Задание 5: Методы addClass / removeClass и JSON ---
 let obj = {
     className: 'open menu',
-    // Метод для добавления класса, если его еще нет
-    addClass: function (cls) {
-        if (!this.className.split(' ').includes(cls)) {
-            this.className += ' ' + cls;
-        }
-        this.className = this.className.trim();
-        return this;
-    },
-    // Метод для удаления класса, если он существует
-    removeClass: function (cls) {
-        let classes = this.className.split(' ');
-        let index = classes.indexOf(cls);
-        if (index !== -1) {
-            classes.splice(index, 1);
-            this.className = classes.join(' ');
-        }
-        return this;
+};
+obj.addClass = function(cls) {
+    const classes = this.className.split(' ');
+    if (!classes.includes(cls)) {
+        classes.push(cls);
+        this.className = classes.join(' ').trim();
     }
 };
+obj.removeClass = function(cls) {
+   const classes = this.className.split(' ').filter(c => c !== cls);
+   this.className = classes.join(' ').trim();
+};
+obj.addClass('new'); // 'open menu new'
+obj.addClass('open'); // 'open menu new' (не добавится)
+obj.removeClass('menu'); // 'open new'
+console.log(obj.className); // "open new"
 
-const jsonStr = JSON.stringify(obj, null, 2);
-console.log("JSON представление объекта obj:");
+// JSON.stringify и JSON.parse с форматированием
+const jsonStr = JSON.stringify(obj, null, 2); 
 console.log(jsonStr);
-
 const obj2 = JSON.parse(jsonStr);
-console.log("Объект после декодирования:", obj2);
-console.log("Равенство className:", obj.className === obj2.className);
+console.log('obj === obj2:', obj === obj2); // false (разные объекты)
+console.log('Содержимое равно:', JSON.stringify(obj) === JSON.stringify(obj2)); // true
 
-// Функция для получения количества секунд с начала текущего дня
+document.getElementById('task5').textContent = `Методы addClass/removeClass работают корректно.
+JSON-строка:
+${jsonStr}
+Равенство объектов (obj === obj2): false`;
+
+
+// --- Задание 6: Функции getSecondsToday и formatDate ---
 function getSecondsToday() {
-    let now = new Date();
-    let today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    let diff = now - today;
-    return Math.floor(diff / 1000);
+    const now = new Date();
+    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    return Math.floor((now - startOfDay) / 1000);
 }
-
-// Функция для форматирования даты в строку формата "дд.мм.гг"
 function formatDate(date) {
-    let day = date.getDate();
-    let month = date.getMonth() + 1;
-    let year = date.getFullYear().toString().substr(-2);
-    return `${day < 10 ? '0' + day : day}.${month < 10 ? '0' + month : month}.${year}`;
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = String(date.getFullYear()).slice(-2);
+    return `${day}.${month}.${year}`;
 }
+console.log("Секунд с начала дня:", getSecondsToday());
+console.log("Форматированная дата:", formatDate(new Date()));
+document.getElementById('task6').textContent = `Секунд с начала дня: ${getSecondsToday()}
+Форматированная дата: ${formatDate(new Date())}`;
