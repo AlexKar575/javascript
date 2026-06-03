@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
+       <style>
+         body {
+            background-color: #fde6fa; 
+        }
+    </style>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,7 +14,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mocha/3.2.0/mocha.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mocha/3.2.0/mocha.js"></script>
     <script>
-        // Инициализируем BDD-интерфейс (describe, it)
+        
         mocha.setup('bdd');
     </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chai/3.5.0/chai.js"></script>
@@ -173,7 +178,7 @@
                  let json = JSON.stringify(obj);
                  let obj2 = JSON.parse(json);
                  assert.strictEqual(obj2.className, obj.className);
-                 assert.isUndefined(obj2.addClass); // Метод не должен существовать после парсинга
+                 assert.isUndefined(obj2.addClass); 
              });
         });
 
@@ -182,7 +187,6 @@
              it("должна возвращать количество секунд с начала дня", function () {
                  let now = new Date();
                  let expected = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-                 // Допускаем погрешность в 1 секунду из-за времени выполнения теста.
                  let actual = getSecondsToday();
                  assert.closeTo(actual, expected, 1);
              });
@@ -191,8 +195,8 @@
          // --- Блок тестов для функции formatDate ---
          describe("Функция formatDate", function () {
              it("должна форматировать дату как ДД.ММ.ГГ", function () {
-                 let date = new Date(2023, 0, 1); // Январь - нулевой месяц в JS Date()
-                 assert.strictEqual(formatDate(date), "01.01.23");
+                 let date = new Date(2001, 10, 9); // Январь - нулевой месяц в JS Date()
+                 assert.strictEqual(formatDate(date), "11.09.01");
              });
          });
     </script>
