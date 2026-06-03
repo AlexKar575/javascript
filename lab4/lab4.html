@@ -117,10 +117,17 @@ describe("Функция isEmpty", function () {
         assert.isFalse(isEmpty(obj));
     });
 
-    it("должна вернуть false для объекта с неперечисляемым свойством", function () {
-        const obj = Object.defineProperty({}, 'name', { value: 'John' });
-        assert.isFalse(isEmpty(obj));
+   it("должна вернуть false для объекта с неперечисляемым свойством", function () {
+    // Добавьте опцию enumerable: false
+    const obj = Object.defineProperty({}, 'name', {
+        value: 'John',
+        enumerable: false // <- Самое важное изменение
     });
+
+    // Дополнительная проверка (для уверенности)
+    assert.equal(Object.keys(obj).length, 0); // keys() ничего не видит
+    assert.isFalse(isEmpty(obj)); // Наша функция должна увидеть скрытое свойство
+});
 });
 
         // --- Блок тестов для методов addClass / removeClass ---
