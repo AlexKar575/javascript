@@ -1,9 +1,28 @@
-// Класс Book представляет книгу с заголовком, годом публикации и ценой
+// Класс Book выводит книгу с заголовком, годом публикации и ценой
 class Book {
+    // Приватное поле price
+    #price;
+
     constructor(title, pubYear, price) {
+        let storedTitle;
+        Object.defineProperty(this, 'title', {
+            get() {
+                return storedTitle;
+            },
+            set(value) {
+                if (value === "") {
+                    throw new Error("Заголовок не может быть пустым");
+                }
+                storedTitle = value;
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+        // Инициализация через сеттеры
         this.title = title;
         this.pubYear = pubYear;
-        this.price = price;
+        this.#price = price;
     }
 
     // Геттер для получения года публикации книги
@@ -21,7 +40,7 @@ class Book {
 
     // Геттер для получения цены книги
     get price() {
-        return this._price;
+        return this.#price;
     }
 
     // Сеттер для установки цены книги
@@ -29,12 +48,12 @@ class Book {
         if (value <= 0) {
             throw new Error("Цена должна быть положительным числом");
         }
-        this._price = value;
+        this.#price = value;
     }
 
     // Метод для вывода заголовка и цены книги в консоль
     show() {
-        console.log(`${this._title}: ${this._price}`);
+        console.log(`${this.title}: ${this.#price}`);
     }
 
     // Статический метод для сравнения книг по году публикации
@@ -70,6 +89,14 @@ let obj = {
         return this;
     }
 };
+
+const jsonStr = JSON.stringify(obj, null, 2);
+console.log("JSON представление объекта obj:");
+console.log(jsonStr);
+
+const obj2 = JSON.parse(jsonStr);
+console.log("Объект после декодирования:", obj2);
+console.log("Равенство className:", obj.className === obj2.className);
 
 // Функция для получения количества секунд с начала текущего дня
 function getSecondsToday() {
