@@ -195,7 +195,7 @@
          // --- Блок тестов для функции formatDate ---
          describe("Функция formatDate", function () {
              it("должна форматировать дату как ДД.ММ.ГГ", function () {
-                 let date = new Date(2001, 08, 11); // Январь - нулевой месяц в JS Date() поэтому надо на месяц меньше брать
+                 let date = new Date(2001, 8, 11); // Январь - нулевой месяц в JS Date() поэтому надо на месяц меньше брать
                  assert.strictEqual(formatDate(date), "11.09.01");
              });
          });
