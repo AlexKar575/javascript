@@ -373,42 +373,22 @@
         </tbody>
     </table>
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-    const cells = document.querySelectorAll(
-        'td[position="relative"]'
-    );
+        'use strict';
 
-    const colors = {
-        light: "#FFCE9E",
-        dark: "#D18B47"
-    };
+        function colorChessboard() {
+            const rows = document.querySelectorAll('tr');
 
-    cells.forEach(function (cell) {
-        let colIndex = parseInt(cell.cellIndex);
-        
-        // Пропускаем первую ячейку в строке (цифры слева)
-        if (!colIndex || isNaN(colIndex)) return;
+            for (let i = 1; i <= 8; i++) {
+                const cells = rows[i].querySelectorAll('td');
+                for (let j = 1; j < 9; j++)
+                    if ((i + j) % 2 === 0)
+                        cells[j].style.backgroundColor = '#ffce9e'; 
+                    else
+                        cells[j].style.backgroundColor = '#d18b47'; 
+            }
+        }
 
-        // Вычисляем номер строки (номер TR минус 1)
-        let rowIndex =
-            Array.from(cell.parentNode.parentNode.children)
-                .indexOf(cell.parentNode) -
-            1;
-
-        // Проверка на пустоту (без фигур)
-        if (
-            !cell.querySelector("img") ||
-            !rowIndex ||
-            !colIndex
-        )
-            return;
-
-        // Формула для шахматной доски: четность суммы координат
-        let isDark = (rowIndex + colIndex) % 2 === 1;
-
-        cell.style.backgroundColor = isDark ? colors.dark : colors.light;
-    });
-});
+        colorChessboard();
     </script>
 </body>
 
