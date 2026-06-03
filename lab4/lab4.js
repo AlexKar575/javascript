@@ -1,176 +1,192 @@
-// --- Задание 1: Класс Book с методом show ---
+/**
+ * Класс для представления книги с валидацией свойств.
+ */
 class Book {
+    /**
+     * Создает экземпляр книги.
+     * @param {string} title - Заголовок книги.
+     * @param {number} pubYear - Год публикации.
+     * @param {number} price - Цена книги.
+     */
     constructor(title, pubYear, price) {
+        let _title;
+        Object.defineProperty(this, 'title', {
+            get() {
+                return _title;
+            },
+            set(value) {
+                if (value === "") {
+                    throw new Error("Заголовок не может быть пустым");
+                }
+                _title = value;
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+        // Используем сеттеры для валидации при инициализации
         this.title = title;
-        this._pubYear = pubYear;
-        this.#price = price;
+        this.pubYear = pubYear;
+        this.price = price;
     }
 
+    /**
+     * Выводит заголовок и цену книги в консоль.
+     */
     show() {
-        console.log(`Название: ${this.title}, Цена: ${this.#price}`);
-    }
-}
-const book1 = new Book("Война и мир", 1869, 1500);
-book1.show();
-document.getElementById('task1').textContent = 'В консоль выведено: "Название: Война и мир, Цена: 1500"';
-
-
-// --- Задание 2: Геттеры, сеттеры и модификаторы доступа ---
-class Book {
-   
-    set title(value) {
-        if (typeof value !== 'string' || value.trim() === '') {
-            throw new Error("Название книги не может быть пустой строкой.");
-        }
-        this._title = value.trim();
-    }
-    get title() {
-        return this._title;
+        console.log(`${this.title}: ${this.price}`);
     }
 
-    
-    set pubYear(value) {
-        const num = Number(value);
-        if (isNaN(num) || num <= 0) {
-            throw new Error("Год публикации должен быть положительным числом.");
-        }
-        this._pubYear = num;
-    }
-    get pubYear() {
-        return this._pubYear;
-    }
-
-    // Приватное свойство price (требование)
-    set price(value) {
-        const num = Number(value);
-        if (isNaN(num) || num <= 0) {
-            throw new Error("Цена должна быть положительным числом.");
-        }
-        this.#price = num;
-    }
-    get price() {
-        return this.#price;
-    }
-
-    // Приватное поле класса
-    #price;
-}
-
-try {
-    const book2 = new Book("Мастер и Маргарита", 1966, 800);
-
-    // Тестирование сеттеров и геттеров
-    book2.title = "   Преступление и наказание   "; // Пробелы обрежутся
-    console.log('Новое название:', book2.title); // Проверка геттера
-
-} catch (e) {
-    console.error(e.message);
-}
-document.getElementById('task2').textContent = 'Геттеры/сеттеры реализованы. Поле title - публичное, pubYear - защищенное (_pubYear), price - приватное (#price).';
-
-
-// --- Задание 3: Статический метод compare и сортировка ---
-class Book {
-
-
+    /**
+     * Статический метод для сравнения двух книг по году публикации.
+     * Используется для сортировки массивов книг.
+     * @param {Book} a - Первая книга.
+     * @param {Book} b - Вторая книга.
+     * @returns {number} Разница в годах публикации.
+     */
     static compare(a, b) {
         return a.pubYear - b.pubYear;
     }
 }
-const books = [
-    new Book("Книга С", 2010, 500),
-    new Book("Книга А", 1995, 300),
-    new Book("Книга Б", 2021, 700)
-];
-books.sort(Book.compare);
-console.log("Сортировка по году публикации:");
-books.forEach(b => console.log(`${b.title} - ${b.pubYear}`));
-document.getElementById('task3').textContent = 'Массив books отсортирован по возрастанию года публикации.';
+
+// --- Геттеры и сеттеры для Book ---
+Object.defineProperty(Book.prototype, 'pubYear', {
+    get() {
+        return this._pubYear;
+    },
+    set(value) {
+        if (value <= 0) {
+            throw new Error("Год публикации должен быть положительным числом");
+        }
+        this._pubYear = value;
+    },
+    enumerable: true,
+    configurable: true
+});
+
+Object.defineProperty(Book.prototype, 'price', {
+    get() {
+        return this._price;
+    },
+    set(value) {
+        if (value <= 0) {
+            throw new Error("Цена должна быть положительным числом");
+        }
+        this._price = value;
+    },
+    enumerable: true,
+    configurable: true
+});
 
 
-// --- Задание 4: Функция isEmpty ---
+/**
+ * Проверяет, является ли объект пустым (не имеет собственных перечисляемых свойств).
+ * @param {Object} obj - Проверяемый объект.
+ * @returns {boolean} True, если объект пуст.
+ */
 function isEmpty(obj) {
-    // Проверка на наличие перечисляемых свойств
-    for (let key in obj) return false;
-
-    // Проверка на наличие символьных свойств
-    const symbols = Object.getOwnPropertySymbols(obj);
-    if (symbols.length > 0) return false;
-
-    // Проверка на наличие неперечисляемых свойств
-    const descs = Object.getOwnPropertyDescriptors(obj);
-    for (let key in descs) {
-        if (!descs[key].enumerable) return false;
-    }
-
-    return true;
+    return Object.keys(obj).length === 0;
 }
 
-// Тестирование функции isEmpty три раза (требование)
-const testObj1 = {}; // Пустой объект
-const testObj2 = { [Symbol()]: true }; // Объект с символьным свойством
-const testObj3 = Object.defineProperty({}, 'name', { value: 'John', enumerable: false }); // Объект с неперечисляемым свойством
 
-console.log('isEmpty(testObj1):', isEmpty(testObj1)); // true
-console.log('isEmpty(testObj2):', isEmpty(testObj2)); // false
-console.log('isEmpty(testObj3):', isEmpty(testObj3)); // false
-
-document.getElementById('task4').textContent = `Функция isEmpty протестирована:
-isEmpty({}) -> ${isEmpty({})}
-isEmpty({[Symbol()]: true}) -> ${isEmpty({[Symbol()]: true})}
-isEmpty(скрытое свойство) -> ${isEmpty(testObj3)}`;
-
-
-// --- Задание 5: Методы addClass / removeClass и JSON ---
-let obj = {
-    className: 'open menu',
-};
-obj.addClass = function(cls) {
-    const classes = this.className.split(' ');
-    if (!classes.includes(cls)) {
-        classes.push(cls);
-        this.className = classes.join(' ').trim();
+/**
+ * Класс для управления строкой классов (аналог classList).
+ */
+class ClassListManager {
+    /**
+     * Создает менеджер классов.
+     * @param {string} initialClasses - Начальная строка классов.
+     */
+    constructor(initialClasses = '') {
+        // Приватное поле для хранения массива классов
+        this.#classes = initialClasses.trim().split(/\s+/).filter(Boolean);
     }
-};
-obj.removeClass = function(cls) {
-   const classes = this.className.split(' ').filter(c => c !== cls);
-   this.className = classes.join(' ').trim();
-};
-obj.addClass('new'); // 'open menu new'
-obj.addClass('open'); // 'open menu new' (не добавится)
-obj.removeClass('menu'); // 'open new'
-console.log(obj.className); // "open new"
 
-// JSON.stringify и JSON.parse с форматированием
-const jsonStr = JSON.stringify(obj, null, 2); 
-console.log(jsonStr);
-const obj2 = JSON.parse(jsonStr);
-console.log('obj === obj2:', obj === obj2); // false (разные объекты)
-console.log('Содержимое равно:', JSON.stringify(obj) === JSON.stringify(obj2)); // true
+    /** @private */
+    #classes;
 
-document.getElementById('task5').textContent = `Методы addClass/removeClass работают корректно.
-JSON-строка:
-${jsonStr}
-Равенство объектов (obj === obj2): false`;
+    /**
+     * Возвращает строку классов.
+     * @returns {string}
+     */
+    get className() {
+        return this.#classes.join(' ');
+    }
+
+    /**
+     * Добавляет класс, если его еще нет.
+     * @param {string} cls - Имя класса для добавления.
+     * @returns {ClassListManager}
+     */
+    addClass(cls) {
+        if (!this.#classes.includes(cls)) {
+            this.#classes.push(cls);
+        }
+        return this;
+    }
+
+    /**
+     * Удаляет класс, если он существует.
+     * @param {string} cls - Имя класса для удаления.
+     * @returns {ClassListManager}
+     */
+    removeClass(cls) {
+        const index = this.#classes.indexOf(cls);
+        if (index !== -1) {
+            this.#classes.splice(index, 1);
+        }
+        return this;
+    }
+}
 
 
-// --- Задание 6: Функции getSecondsToday и formatDate ---
+/**
+ * Возвращает количество секунд, прошедших с начала текущего дня.
+ * @returns {number}
+ */
 function getSecondsToday() {
     const now = new Date();
-    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    return Math.floor((now - startOfDay) / 1000);
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const diff = now - today;
+    return Math.floor(diff / 1000);
 }
+
+/**
+ * Форматирует дату в строку формата "дд.мм.гг".
+ * @param {Date} date - Объект даты для форматирования.
+ * @returns {string}
+ */
 function formatDate(date) {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = String(date.getFullYear()).slice(-2);
-    return `${day}.${month}.${year}`;
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+    const year = date.getFullYear().toString().substr(-2);
+
+    const pad = (n) => n < 10 ? '0' + n : n;
+
+    return `${pad(day)}.${pad(month)}.${year}`;
 }
-console.log("Секунд с начала дня:", getSecondsToday());
-console.log("Форматированная дата:", formatDate(new Date()));
-document.getElementById('task6').textContent = `Секунд с начала дня: ${getSecondsToday()}
-Форматированная дата: ${formatDate(new Date())}`;
-window.Book = Book;
-window.isEmpty = isEmpty;
-window.getSecondsToday = getSecondsToday;
-window.formatDate = formatDate;
+
+
+// --- Демонстрационный код ---
+function runDemo() {
+    console.log("--- Демонстрация JSON сериализации ---");
+
+    // Используем новый класс для управления классами
+    const obj = new ClassListManager('open menu');
+
+    const jsonStr = JSON.stringify(obj);
+    
+    console.log("JSON представление объекта obj:");
+    console.log(jsonStr); // Выведет {"className":"open menu"}
+
+    const obj2 = JSON.parse(jsonStr);
+    
+    // Проверка работы геттера className
+    console.log("Объект после декодирования:", obj2);
+    
+    // Проверка равенства строк классов
+    console.log("Равенство className:", obj.className === obj2.className);
+}
+
+// Запускаем демонстрацию после загрузки скрипта
+runDemo();
