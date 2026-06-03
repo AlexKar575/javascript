@@ -80,12 +80,16 @@ Object.defineProperty(Book.prototype, 'price', {
 
 
 /**
- * Проверяет, является ли объект пустым (не имеет собственных перечисляемых свойств).
- * @param {Object} obj - Проверяемый объект.
- * @returns {boolean} True, если объект пуст.
+ * Проверяет, есть ли у объекта любые собственные свойства.
+ * Возвратит true, если объект полностью пустой.
+ * @param {Object} obj - Любой объект.
+ * @returns {boolean}
  */
 function isEmpty(obj) {
-    return Object.keys(obj).length === 0;
+    return (
+        Object.getOwnPropertyNames(obj).length === 0 && // Обычные свойства
+        Object.getOwnPropertySymbols(obj).length === 0 // Свойства-символы
+    );
 }
 
 
