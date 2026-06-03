@@ -110,17 +110,24 @@
             });
         });
 
-        describe("isEmpty", function () {
-            it("должен вернуть true для пустого объекта", function () {
-                assert.isTrue(isEmpty({}));
-                console.log("Пустой объект: true");
-            });
+     describe("isEmpty", function () {
+    it("должен вернуть true для пустого объекта", function () {
+        assert.isTrue(isEmpty({}));
+        console.log("Пустой объект: true");
+    });
 
-            it("должен вернуть false для непустого объекта", function () {
-                assert.isFalse(isEmpty({ [Symbol()]: true }));
-                console.log("Непустой объект: false");
-            });
-        });
+    it("должен вернуть false для непустого объекта", function () {
+        assert.isFalse(isEmpty({ prop: "value" })); 
+        console.log("Непустой объект (с ключом 'prop'): false");
+    });
+
+    
+    it("должен вернуть true для объекта только с Symbol-ключом", function () {
+        let sym = Symbol('test');
+        assert.isTrue(isEmpty({ [sym]: 'value' }));
+        console.log("Объект с Symbol-ключом: true");
+    });
+});
 
         describe("addClass и removeClass", function () {
             let obj;
