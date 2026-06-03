@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тестирование lab.js</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fde6fa; /* Нежно-розовый фон */
+            color: #333;
+            padding: 20px;
+        }
+        .console-output {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            white-space: pre-wrap; /* Чтобы переносы строк из console.log работали */
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Результаты выполнения задания</h1>
+
+    <div id="output" class="console-output">
+        <!-- Результаты будут выведены сюда -->
+    </div>
+
+    <script src="lab4.js"></script>
+    <script>
+        // --- Блок 1: Класс Book ---
+        console.log("--- Блок 1: Класс Book ---");
+        const myBook = new Book("Война и мир", 1869, 1500);
+        myBook.show(); // Вызов метода show
+
+        // Попытка изменить свойства
+        console.log("--- Изменение свойств книги ---");
+        try {
+            myBook.title = "Анна Каренина";
+            console.log(`Новое название: ${myBook.title}`);
+
+            myBook.pubYear = 1877;
+            console.log(`Новый год публикации: ${myBook.pubYear}`);
+
+            // Эта строка вызовет ошибку, так как цена отрицательная
+            myBook.price = -500; 
+        } catch (e) {
+            console.error("Ошибка при изменении свойств:", e.message);
+        }
+
+
+        // --- Блок 2: Статический метод compare ---
+        console.log("\n--- Блок 2: Сортировка книг ---");
+        const bookA = new Book("Книга А", 2001, 500);
+        const bookB = new Book("Книга Б", 1999, 700);
+        const bookC = new Book("Книга В", 2010, 600);
+
+        const books = [bookA, bookB, bookC];
+        books.sort(Book.compare);
+
+        console.log("Книги отсортированы по году публикации:");
+        books.forEach(b => console.log(`- ${b.title} (${b.pubYear})`));
+
+
+        // --- Блок 3: Функция isEmpty ---
+        console.log("\n--- Блок 3: Функция isEmpty ---");
+        const emptyObj = {};
+        const symObj = { [Symbol()]: true };
+
+        // Создаем объект с неперечисляемым свойством
+        const nonEnumObj = {};
+        Object.defineProperty(nonEnumObj, 'name', { value: 'John', enumerable: false });
+
+        console.log("isEmpty({}):", isEmpty(emptyObj)); // true
+        console.log("isEmpty({[Symbol()]: true}):", isEmpty(symObj)); // false
+        console.log("isEmpty(Object с неперечисляемым свойством):", isEmpty(nonEnumObj)); // false
+
+
+        // --- Блок 4: Методы addClass / removeClass ---
+        console.log("\n--- Блок 4: Методы addClass / removeClass ---");
+        let obj = {
+            className: 'open menu',
+            addClass(cls) {
+                if (!this.className.split(' ').includes(cls)) {
+                    this.className += ' ' + cls;
+                }
+                this.className = this.className.trim();
+                return this;
+            },
+            removeClass(cls) {
+                let classes = this.className.split(' ');
+                let index = classes.indexOf(cls);
+                if (index !== -1) {
+                    classes.splice(index, 1);
+                    this.className = classes.join(' ');
+                }
+                return this;
+            }
+        };
+
+        obj.addClass('new');
+        console.log(`После addClass('new'): '${obj.className}'`);
+
+        obj.removeClass('open');
+        console.log(`После removeClass('open'): '${obj.className}'`);
+
+
+        // --- Блок 5: JSON ---
+        console.log("\n--- Блок 5: JSON ---");
+        let jsonString = JSON.stringify(obj, null, 2); // Отступ в 2 пробела
+        console.log("JSON-строка:");
+        console.log(jsonString);
+
+        let obj2 = JSON.parse(jsonString);
+        console.log("Проверка равенства (только перечисляемые свойства):", obj.className === obj2.className);
+
+
+        // --- Блок 6: getSecondsToday ---
+        console.log("\n--- Блок 6: getSecondsToday ---");
+        console.log("Секунд с начала дня:", getSecondsToday());
+
+
+        // --- Блок 7: formatDate ---
+        console.log("\n--- Блок 7: formatDate (новая дата) ---");
+        const newDate = new Date(2024, 7, 15); // Месяцы считаются от 0 (август - это 7)
+        console.log(formatDate(newDate)); // Должно вывести "15.08.24"
+
+
+    </script>
+</body>
+</html>
