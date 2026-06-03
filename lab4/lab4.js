@@ -159,7 +159,7 @@ function getSecondsToday() {
 function formatDate(date) {
     const day = date.getDate();
     const month = date.getMonth() + 1;
-    const year = date.getFullYear().toString().substr(-2);
+    const year = date.getFullYear();
 
     const pad = (n) => n < 10 ? '0' + n : n;
 
