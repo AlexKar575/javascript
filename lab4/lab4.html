@@ -2,23 +2,28 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тестирование lab.js</title>
+    <title>Задание по JavaScript</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: Arial, sans-serif;
             background-color: #fde6fa; /* Нежно-розовый фон */
             color: #333;
             padding: 20px;
+            line-height: 1.6;
         }
         .console-output {
             background-color: #fff;
             border: 1px solid #ddd;
-            padding: 15px;
+            padding: 20px;
             border-radius: 8px;
             margin-top: 20px;
-            white-space: pre-wrap; /* Чтобы переносы строк из console.log работали */
+            white-space: pre-wrap; /* Сохраняет переносы строк */
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+        }
+        h1 {
+            color: #880e4f;
         }
     </style>
 </head>
@@ -27,109 +32,163 @@
     <h1>Результаты выполнения задания</h1>
 
     <div id="output" class="console-output">
-        <!-- Результаты будут выведены сюда -->
+        <!-- Результаты появятся здесь -->
     </div>
 
-    <script src="lab4.js"></script>
     <script>
-        // --- Блок 1: Класс Book ---
-        console.log("--- Блок 1: Класс Book ---");
-        const myBook = new Book("Война и мир", 1869, 1500);
-        myBook.show(); // Вызов метода show
+        // --- Класс Book ---
+        class Book {
+            constructor(title, pubYear, price) {
+                this.title = title;
+                this._pubYear = pubYear;
+                this.#price = price;
+            }
 
-        // Попытка изменить свойства
-        console.log("--- Изменение свойств книги ---");
-        try {
-            myBook.title = "Анна Каренина";
-            console.log(`Новое название: ${myBook.title}`);
+            #price;
 
-            myBook.pubYear = 1877;
-            console.log(`Новый год публикации: ${myBook.pubYear}`);
+            show() {
+                console.log(`${this.title}: ${this.#price}`);
+                this.logToPage(`${this.title}: ${this.#price}`);
+            }
 
-            // Эта строка вызовет ошибку, так как цена отрицательная
-            myBook.price = -500; 
-        } catch (e) {
-            console.error("Ошибка при изменении свойств:", e.message);
+            get title() { return this._title; }
+            set title(value) {
+                if (value === '') throw new Error("Название не может быть пустым");
+                this._title = value;
+            }
+
+            get pubYear() { return this._pubYear; }
+            set pubYear(value) {
+                if (typeof value !== 'number' || value <= 0) throw new Error("Год должен быть положительным числом");
+                this._pubYear = value;
+            }
+
+            get price() { return this.#price; }
+            set price(value) {
+                if (typeof value !== 'number' || value <= 0) throw new Error("Цена должна быть положительным числом");
+                this.#price = value;
+            }
+
+            static compare(a, b) {
+                return a.pubYear - b.pubYear;
+            }
+        }
+
+        // --- Вспомогательная функция для вывода на страницу ---
+        function logToPage(message) {
+            const outputDiv = document.getElementById('output');
+            outputDiv.textContent += message + '\n';
         }
 
 
-        // --- Блок 2: Статический метод compare ---
-        console.log("\n--- Блок 2: Сортировка книг ---");
-        const bookA = new Book("Книга А", 2001, 500);
-        const bookB = new Book("Книга Б", 1999, 700);
-        const bookC = new Book("Книга В", 2010, 600);
+        // --- 1. Создание и использование класса Book ---
+        logToPage("--- 1. Класс Book ---");
+        const myBook = new Book("Война и мир", 1869, 1500);
+        myBook.show();
+
+
+        // --- 2. Проверка геттеров и сеттеров ---
+        logToPage("\n--- 2. Проверка сеттеров ---");
+        try {
+            myBook.title = "Анна Каренина";
+            logToPage(`Новое название: ${myBook.title}`);
+
+            myBook.pubYear = 1877;
+            logToPage(`Новый год публикации: ${myBook.pubYear}`);
+
+            myBook.price = 2000;
+            logToPage(`Новая цена: ${myBook.price}`);
+
+            // Эта строка вызовет ошибку
+            myBook.price = -500;
+        } catch (e) {
+             logToPage("Ошибка (ожидаемая): " + e.message);
+        }
+
+
+        // --- 3. Статический метод compare ---
+        logToPage("\n--- 3. Сортировка книг ---");
+        const bookA = new Book("Старый пёс", 1990, 100);
+        const bookB = new Book("Молодой кот", 2020, 500);
+        const bookC = new Book("Средняя птица", 2005, 300);
 
         const books = [bookA, bookB, bookC];
         books.sort(Book.compare);
 
-        console.log("Книги отсортированы по году публикации:");
-        books.forEach(b => console.log(`- ${b.title} (${b.pubYear})`));
+        logToPage("Книги после сортировки по году:");
+        books.forEach(b => logToPage(`- ${b.title} (${b.pubYear})`));
 
 
-        // --- Блок 3: Функция isEmpty ---
-        console.log("\n--- Блок 3: Функция isEmpty ---");
-        const emptyObj = {};
-        const symObj = { [Symbol()]: true };
+        // --- 4. Функция isEmpty ---
+        logToPage("\n--- 4. Функция isEmpty ---");
 
-        // Создаем объект с неперечисляемым свойством
-        const nonEnumObj = {};
-        Object.defineProperty(nonEnumObj, 'name', { value: 'John', enumerable: false });
+        function isEmpty(obj) {
+          for (let key in obj) return false;
+          return true; // Если цикл не нашел перечисляемых свойств
+        }
 
-        console.log("isEmpty({}):", isEmpty(emptyObj)); // true
-        console.log("isEmpty({[Symbol()]: true}):", isEmpty(symObj)); // false
-        console.log("isEmpty(Object с неперечисляемым свойством):", isEmpty(nonEnumObj)); // false
+        logToPage(`isEmpty({}): ${isEmpty({})}`);
+        
+        const symObj = { [Symbol('sym')]: 'value' };
+        logToPage(`isEmpty({[Symbol()]: true}): ${isEmpty(symObj)}`); 
+        
 
 
-        // --- Блок 4: Методы addClass / removeClass ---
-        console.log("\n--- Блок 4: Методы addClass / removeClass ---");
+        // --- 5. Методы addClass / removeClass ---
+        logToPage("\n--- 5. Методы addClass / removeClass ---");
         let obj = {
-            className: 'open menu',
-            addClass(cls) {
-                if (!this.className.split(' ').includes(cls)) {
-                    this.className += ' ' + cls;
-                }
-                this.className = this.className.trim();
-                return this;
-            },
-            removeClass(cls) {
-                let classes = this.className.split(' ');
-                let index = classes.indexOf(cls);
-                if (index !== -1) {
-                    classes.splice(index, 1);
-                    this.className = classes.join(' ');
-                }
-                return this;
-            }
-        };
+          className: 'open menu',
+          addClass(cls) {
+              let classes = this.className.split(' ');
+              if (!classes.includes(cls)) {
+                  classes.push(cls);
+                  this.className = classes.join(' ');
+              }
+              return this;
+          },
+          removeClass(cls) {
+              let classes = this.className.split(' ');
+              let index = classes.indexOf(cls);
+              if (index !== -1) {
+                  classes.splice(index, 1);
+                  this.className = classes.join(' ');
+              }
+              return this;
+          }
+      };
 
-        obj.addClass('new');
-        console.log(`После addClass('new'): '${obj.className}'`);
-
-        obj.removeClass('open');
-        console.log(`После removeClass('open'): '${obj.className}'`);
-
-
-        // --- Блок 5: JSON ---
-        console.log("\n--- Блок 5: JSON ---");
-        let jsonString = JSON.stringify(obj, null, 2); // Отступ в 2 пробела
-        console.log("JSON-строка:");
-        console.log(jsonString);
-
-        let obj2 = JSON.parse(jsonString);
-        console.log("Проверка равенства (только перечисляемые свойства):", obj.className === obj2.className);
+      obj.addClass('new');
+      logToPage(`После addClass('new'): '${obj.className}'`);
+      obj.removeClass('open');
+      logToPage(`После removeClass('open'): '${obj.className}'`);
 
 
-        // --- Блок 6: getSecondsToday ---
-        console.log("\n--- Блок 6: getSecondsToday ---");
-        console.log("Секунд с начала дня:", getSecondsToday());
+      // --- 6. JSON ---
+      logToPage("\n--- 6. JSON ---");
+      let jsonString = JSON.stringify(obj, null, 2);
+      logToPage("JSON-строка:");
+      logToPage(jsonString);
 
 
-        // --- Блок 7: formatDate ---
-        console.log("\n--- Блок 7: formatDate (новая дата) ---");
-        const newDate = new Date(2024, 7, 15); // Месяцы считаются от 0 (август - это 7)
-        console.log(formatDate(newDate)); // Должно вывести "15.08.24"
+      // --- 7. getSecondsToday ---
+      logToPage("\n--- 7. getSecondsToday ---");
+      function getSecondsToday() {
+          const now = new Date();
+          return now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
+      }
+      logToPage(`Секунд с начала дня: ${getSecondsToday()}`);
 
 
-    </script>
+      // --- 8. formatDate ---
+      logToPage("\n--- 8. formatDate (новая дата) ---");
+      function formatDate(date) {
+          const day = String(date.getDate()).padStart(2, '0');
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          const year = String(date.getFullYear()).slice(-2);
+          return `${day}.${month}.${year}`;
+      }
+      const newDate = new Date(2024, 7, 15); // Август - это 7-й месяц (отсчет с 0)
+      logToPage(formatDate(newDate)); 
+        </script>
 </body>
 </html>
