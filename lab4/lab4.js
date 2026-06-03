@@ -1,12 +1,10 @@
-/**
- * Класс для представления книги.
- */
+
 class Book {
     /**
-     * Создает экземпляр книги.
-     * @param {string} title - Название книги.
-     * @param {number} pubYear - Год публикации.
-     * @param {number} price - Цена книги.
+      Создает экземпляр книги.
+     @param {string} title - Название книги.
+      @param {number} pubYear - Год публикации.
+      @param {number} price - Цена книги.
      */
     constructor(title, pubYear, price) {
         this.title = title; // Используем сеттер
@@ -14,19 +12,17 @@ class Book {
         this.#price = price; // Приватное поле устанавливается напрямую
     }
 
-    /**
-     * Выводит название и цену книги в консоль.
-     */
+    /** Выводит название и цену книги в консоль.*/
     show() {
         console.log(`Книга "${this.title}" стоит ${this.price} руб.`);
     }
 
     /**
-     * Сравнивает две книги по году публикации.
-     * @static
-     * @param {Book} bookA - Первая книга.
-     * @param {Book} bookB - Вторая книга.
-     * @returns {number} Положительное число, если A новее B; отрицательное, если старше; 0, если равны.
+     Сравнивает две книги по году публикации.
+      @static
+     @param {Book} bookA - Первая книга.
+     @param {Book} bookB - Вторая книга.
+     @returns {number} Положительное число, если A новее B; отрицательное, если старше; 0, если равны.
      */
     static compare(bookA, bookB) {
         return bookA.pubYear - bookB.pubYear;
