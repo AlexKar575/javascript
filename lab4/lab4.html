@@ -107,28 +107,19 @@
 <!-- Начало блока тестов -->
 describe("Функция isEmpty", function () {
     it("должна вернуть true для пустого объекта", function () {
-        const emptyObj = {};
-        assert.isTrue(isEmpty(emptyObj)); // Ожидается true
+        const obj = {};
+        assert.isTrue(isEmpty(obj));
     });
 
-    it("должна вернуть false для объекта с обычным свойством", function () {
-        const objWithKey = { name: 'test' };
-        assert.isFalse(isEmpty(objWithKey)); // Ожидается false
+    it("должна вернуть false для объекта с символьным свойством", function () {
+        const sym = Symbol();
+        const obj = { [sym]: true };
+        assert.isFalse(isEmpty(obj));
     });
 
-    it("должна вернуть false для объекта с символом", function () {
-        const sym = Symbol('my-symbol');
-        const objWithSym = {[sym]: 'value'};
-        
-        // Проверяем, что обычный цикл for-in не видит символ
-        let hasProps = false;
-        for (let prop in objWithSym) {
-            hasProps = true;
-        }
-        assert.isFalse(hasProps); // Обычная итерация ничего не нашла
-
-        // Но наша функция должна учитывать символы
-        assert.isFalse(isEmpty(objWithSym)); // Ожидается false
+    it("должна вернуть false для объекта с неперечисляемым свойством", function () {
+        const obj = Object.defineProperty({}, 'name', { value: 'John' });
+        assert.isFalse(isEmpty(obj));
     });
 });
 
