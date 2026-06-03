@@ -368,7 +368,42 @@
         </tbody>
     </table>
     <script>
-        /* ваш код */
+        document.addEventListener("DOMContentLoaded", function () {
+    const cells = document.querySelectorAll(
+        'td[position="relative"]'
+    );
+
+    const colors = {
+        light: "#FFCE9E",
+        dark: "#D18B47"
+    };
+
+    cells.forEach(function (cell) {
+        let colIndex = parseInt(cell.cellIndex);
+        
+        // Пропускаем первую ячейку в строке (цифры слева)
+        if (!colIndex || isNaN(colIndex)) return;
+
+        // Вычисляем номер строки (номер TR минус 1)
+        let rowIndex =
+            Array.from(cell.parentNode.parentNode.children)
+                .indexOf(cell.parentNode) -
+            1;
+
+        // Проверка на пустоту (без фигур)
+        if (
+            !cell.querySelector("img") ||
+            !rowIndex ||
+            !colIndex
+        )
+            return;
+
+        // Формула для шахматной доски: четность суммы координат
+        let isDark = (rowIndex + colIndex) % 2 === 1;
+
+        cell.style.backgroundColor = isDark ? colors.dark : colors.light;
+    });
+});
     </script>
 </body>
 
