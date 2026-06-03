@@ -196,7 +196,7 @@
          describe("Функция formatDate", function () {
              it("должна форматировать дату как ДД.ММ.ГГ", function () {
                     let date = new Date(2026, 4, 1);// Январь - нулевой месяц в JS Date() поэтому надо на месяц меньше брать
-                    assert.strictEqual(formatDate(date), '01.05.26');
+                    assert.strictEqual(formatDate(date), '01.05.2026');
                
              });
          });
