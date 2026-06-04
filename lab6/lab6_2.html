@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <style>
+         body {
+            background-color: #fde6fa; 
+        }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Плейсхолдер-подсказка</title>
+    <style>
+        body {
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        #form {
+            position: absolute;
+            transition: all 0.3s ease-in-out;
+        }
+
+        input {
+            padding: 10px;
+            font-size: 1rem;
+        }
+
+        ::placeholder {
+            color: blue;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Форма -->
+    <form id="form">
+        <label for="placeholder"></label>
+        <input id="placeholder" type="text" data-placeholder="Введите текст или не надо">
+    </form>
+
+    <script>
+        'use strict';
+
+        const form = document.getElementById('form');
+        const field = form.querySelector('#placeholder');
+        const label = form.querySelector('label');
+
+        // Подготовка подсказки
+        label.style.visibility = 'hidden';
+        field.setAttribute('placeholder', field.dataset.placeholder);
+        label.innerText = field.dataset.placeholder;
+
+        // Логика перемещения
+        function moveFormRandomly() {
+            const winW = window.innerWidth;
+            const winH = window.innerHeight;
+
+            // Границы, чтобы форма не выходила за экран
+            const maxLeft = winW - form.offsetWidth - 20;
+            const maxTop = winH - form.offsetHeight - 20;
+
+            const randLeft = Math.floor(Math.random() * maxLeft);
+            const randTop = Math.floor(Math.random() * maxTop);
+
+            form.style.left = `${randLeft}px`;
+            form.style.top = `${randTop}px`;
+        }
+
+        // События
+        field.addEventListener('focus', () => {
+            label.style.visibility = 'visible';
+            field.setAttribute('placeholder', '');
+        });
+
+        field.addEventListener('blur', () => {
+            label.style.visibility = 'hidden';
+            field.setAttribute('placeholder', field.dataset.placeholder);
+
+            // Перемещение
+            moveFormRandomly();
+        });
+
+        // Сразу ставим форму в случайное место
+        moveFormRandomly();
+    </script>
+</body>
+</html>
