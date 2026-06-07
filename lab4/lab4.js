@@ -9,6 +9,7 @@ class Book {
      * @param {number} price - Цена книги.
      */
     constructor(title, pubYear, price) {
+        // Приватная переменная для свойства 'title'
         let _title;
         Object.defineProperty(this, 'title', {
             get() {
@@ -24,17 +25,28 @@ class Book {
             configurable: true
         });
 
-        // Используем сеттеры для валидации при инициализации
-        this.title = title;
+        this.title = title; // Используем сеттер для валидации
+
+        if (pubYear <= 0) {
+            throw new Error("Год публикации должен быть положительным числом");
+        }
         this.pubYear = pubYear;
-        this.price = price;
+
+        if (price <= 0) {
+            throw new Error("Цена должна быть положительным числом");
+        }
+        // Инициализируем приватное поле #price
+        this.#price = price;
     }
+
+    /** @private Приватное поле для хранения цены */
+    #price;
 
     /**
      * Выводит заголовок и цену книги в консоль.
      */
     show() {
-        console.log(`${this.title}: ${this.price}`);
+        console.log(`${this.title}: ${this.#price}`); // Обращаемся к приватному полю
     }
 
     /**
@@ -49,35 +61,6 @@ class Book {
     }
 }
 
-// --- Геттеры и сеттеры для Book ---
-Object.defineProperty(Book.prototype, 'pubYear', {
-    get() {
-        return this._pubYear;
-    },
-    set(value) {
-        if (value <= 0) {
-            throw new Error("Год публикации должен быть положительным числом");
-        }
-        this._pubYear = value;
-    },
-    enumerable: true,
-    configurable: true
-});
-
-Object.defineProperty(Book.prototype, 'price', {
-    get() {
-        return this._price;
-    },
-    set(value) {
-        if (value <= 0) {
-            throw new Error("Цена должна быть положительным числом");
-        }
-        this._price = value;
-    },
-    enumerable: true,
-    configurable: true
-});
-
 
 /**
  * Проверяет, есть ли у объекта любые собственные свойства.
@@ -87,8 +70,8 @@ Object.defineProperty(Book.prototype, 'price', {
  */
 function isEmpty(obj) {
     return (
-        Object.getOwnPropertyNames(obj).length === 0 && // Обычные свойства
-        Object.getOwnPropertySymbols(obj).length === 0 // Свойства-символы
+        Object.getOwnPropertyNames(obj).length === 0 &&
+        Object.getOwnPropertySymbols(obj).length === 0
     );
 }
 
@@ -102,7 +85,6 @@ class ClassListManager {
      * @param {string} initialClasses - Начальная строка классов.
      */
     constructor(initialClasses = '') {
-        // Приватное поле для хранения массива классов
         this.#classes = initialClasses.trim().split(/\s+/).filter(Boolean);
     }
 
@@ -175,7 +157,6 @@ function formatDate(date) {
 function runDemo() {
     console.log("--- Демонстрация JSON сериализации ---");
 
-    // Используем новый класс для управления классами
     const obj = new ClassListManager('open menu');
 
     const jsonStr = JSON.stringify(obj);
@@ -185,11 +166,22 @@ function runDemo() {
 
     const obj2 = JSON.parse(jsonStr);
     
-    // Проверка работы геттера className
     console.log("Объект после декодирования:", obj2);
-    
-    // Проверка равенства строк классов
     console.log("Равенство className:", obj.className === obj2.className);
+
+    // --- Демо для класса Book ---
+    try {
+        const myBook = new Book("Война и мир", 1869, 500);
+        console.log("\n--- Демонстрация работы класса Book ---");
+        myBook.show(); // Выведет: Война и мир: 500
+
+        // Попытка прямого доступа к приватному свойству вызовет ошибку
+        // console.log(myBook.price); // undefined
+        // console.log(myBook.#price); // SyntaxError: Private field '#price' must be declared in an enclosing class
+
+    } catch (e) {
+        console.error(e.message);
+    }
 }
 
 // Запускаем демонстрацию после загрузки скрипта
