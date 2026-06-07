@@ -2,11 +2,6 @@
 <html lang="ru">
 
 <head>
-  <style>
-         body {
-            background-color: #fde6fa; 
-        }
-    </style>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>textarea</title>
@@ -17,35 +12,74 @@
             align-items: center;
             height: 100vh;
             margin: 0;
+            background-color: #fde6fa; 
         }
-        
+
         #changeable, textarea {
             text-align: center;
             font-size: 18px;
             padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
-        
+
         textarea {
-            width: 500px;
+            width: 70%; 
+            min-width: 300px;
+            max-width: 800px;
             height: 200px;
+            resize: vertical; /
+            outline: none; 
+        }
+
+        #changeable {
+            cursor: pointer; /* Показывает, что блок кликабельный */
+            transition: background-color 0.2s;
+        }
+
+        #changeable:hover {
+            background-color: #e0d9e0;
         }
     </style>
 </head>
 
 <body>
 
+    <!-- Блок для отображения текста -->
     <div id="changeable">Нажмите Ctrl+E для редактирования данного текста. 
         После изменений нажмите Ctrl+S для сохранения изменений. НАПОМИНАНИЕ: За нами могут следить,поэтому будь аккуратен =) </div>
 
     <script>
         'use strict';
 
+        const KEY_STORAGE = 'savedText'; // Ключ, под которым текст будет храниться в localStorage
         let div = document.getElementById('changeable');
         let textarea = null;
 
+        /**
+         * Загружает сохраненный текст из localStorage и выводит его на страницу.
+         */
+        function loadSavedText() {
+            const savedText = localStorage.getItem(KEY_STORAGE);
+            if (savedText !== null) {
+                div.innerHTML = savedText;
+            }
+        }
+
+        /**
+         * Сохраняет текущий текст из div в localStorage.
+         */
+        function saveTextToStorage() {
+            localStorage.setItem(KEY_STORAGE, div.innerHTML);
+        }
+
+        // Вызываем функцию загрузки сразу при старте скрипта
+        loadSavedText();
+
         document.onkeydown = function (event) {
+            // Открытие редактора (Ctrl+E / Ctrl+У)
             if (event.ctrlKey && (event.key === 'e' || event.key === 'у')) {
-                event.preventDefault(); 
+                event.preventDefault(); // Предотвращаем стандартное действие браузера
                 if (!textarea) {
                     textarea = document.createElement('textarea');
                     textarea.value = div.innerHTML;
@@ -53,16 +87,17 @@
                     textarea.focus();
                 }
             }
-  
+            // Сохранение и выход (Ctrl+S / Ctrl+Ы)
             else if (event.ctrlKey && (event.key === 's' || event.key === 'ы')) {
-                event.preventDefault(); 
+                event.preventDefault();
                 if (textarea) {
                     div.innerHTML = textarea.value;
+                    saveTextToStorage(); // <-- СОХРАНЯЕМ ТЕКСТ В LOCALSTORAGE
                     textarea.replaceWith(div);
                     textarea = null;
                 }
             }
-
+            // Отмена редактирования (Esc)
             else if (event.key === 'Escape') {
                 if (textarea) {
                     textarea.replaceWith(div);
