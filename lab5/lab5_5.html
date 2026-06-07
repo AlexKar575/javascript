@@ -2,49 +2,66 @@
 <html lang="ru">
 
 <head>
-  <style>
-         body {
-            background-color: #fde6fa; 
-        }
-    </style>
     <meta charset="UTF-8">
     <title>Сообщения</title>
     <style>
         body {
-            margin: 10px auto;
+            background-color: #fde6fa;
+            margin: 0; /* Убрал margin у body, чтобы контент не смещался при скрытии */
+        }
+
+        body > div {
             width: 470px;
+            margin: 30px auto; /* Добавил авто-поля для центрирования контента */
+            padding: 0 5px; /* Небольшой отступ по бокам */
         }
 
         h3 {
             margin: 0;
             padding-bottom: .3em;
-            padding-right: 20px;
             font-size: 1.1em;
+            color: #2c3e50; /* Темный цвет заголовка для контраста */
         }
 
         p {
             margin: 0;
             padding: 0 0 .5em;
+            line-height: 1.5;
+            color: #34495e;
         }
 
         .pane {
             background: #edf5e1;
-            padding: 10px 20px 10px;
+            padding: 15px 20px;
             border-top: solid 2px #c4df9b;
             position: relative;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
         }
 
         .remove-button {
             position: absolute;
-            font-size: 110%;
-            top: 0;
-            color: darkred;
-            right: 10px;
+            top: 15px;
+            right: 15px;
             display: block;
             width: 24px;
             height: 24px;
             border: none;
             background: transparent;
+            cursor: pointer;
+            font-weight: bold;
+            color: darkred;
+            transition: color 0.2s ease;
+        }
+
+        .remove-button:hover {
+            color: red;
+        }
+
+        .hidden {
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.4s ease-out, visibility 0.4s ease-out;
         }
     </style>
 </head>
@@ -54,38 +71,42 @@
     <div id="messages-container">
         <div class="pane">
             <h3>Лошадь</h3>
-            <p>Домашняя лошадь — животное семейства непарнокопытных, одомашненный и единственный сохранившийся подвид
-                дикой лошади, вымершей в дикой природе, за исключением небольшой популяции лошади Пржевальского.</p>
+            <p>Домашняя лошадь — животное семейства непарнокопытных, одомашненный и единственный сохранившийся подвид дикой лошади, вымершей в дикой природе, за исключением небольшой популяции лошади Пржевальского.</p>
             <button class="remove-button">[x]</button>
         </div>
         <div class="pane">
             <h3>Осёл</h3>
-            <p>Домашний осёл или ишак — одомашненный подвид дикого осла, сыгравший важную историческую роль в развитии
-                хозяйства и культуры человека. Все одомашненные ослы относятся к африканским ослам.</p>
+            <p>Домашний осёл или ишак — одомашненный подвид дикого осла, сыгравший важную историческую роль в развитии хозяйства и культуры человека. Все одомашненные ослы относятся к африканским ослам.</p>
             <button class="remove-button">[x]</button>
         </div>
         <div class="pane">
             <h3>Корова, а также пара слов о диком быке, о волах и о тёлках. </h3>
-            <p>Коро́ва — самка домашнего быка, одомашненного подвида дикого быка, парнокопытного жвачного животного
-                семейства полорогих. Самцы вида называются быками, молодняк — телятами, кастрированные самцы — волами.
-                Молодых (до первой стельности) самок называют
-                тёлками.
-            </p>
+            <p>Коро́ва — самка домашнего быка, одомашненного подвида дикого быка, парнокопытного жвачного животного семейства полорогих. Самцы вида называются быками, молодняк — телятами, кастрированные самцы — волами. Молодых (до первой стельности) самок называют тёлками.</p>
             <button class="remove-button">[x]</button>
         </div>
     </div>
 
     <script>
-    'use strict';
+        'use strict';
 
-    const removeButtons = document.querySelectorAll('.remove-button');
+        // Находим контейнер, который содержит все сообщения
+        const messagesContainer = document.getElementById('messages-container');
 
-    removeButtons.forEach(function (button) {
-        button.addEventListener('click', function () {
-            button.parentNode.remove();
+        // Используем делегирование событий: вешаем один обработчик на весь контейнер.
+        // Это эффективнее, чем вешать отдельный обработчик на каждую кнопку.
+        messagesContainer.addEventListener('click', function(event) {
+            // Проверяем, является ли цель клика кнопкой с нужным классом
+            if (event.target.classList.contains('remove-button')) {
+                // Находим ближайший родительский элемент с классом 'pane'
+                const messagePane = event.target.closest('.pane');
+                
+                // Если такой элемент найден, добавляем ему класс 'hidden' для скрытия
+                if (messagePane) {
+                    messagePane.classList.add('hidden');
+                }
+            }
         });
-    });
-</script>
+    </script>
 
 </body>
 
