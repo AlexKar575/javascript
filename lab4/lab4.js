@@ -1,149 +1,115 @@
-/**
- * Класс, представляющий книгу
- */
-export class Book {
-    /** @type {string} - Название книги */
-    title; 
-    
-    /** @type {number} - Год издания (защищенное поле) */
-    _pubYear;
-    
-    /** @type {number} - Цена книги (приватное поле) */
+// Класс Book выводит книгу с заголовком, годом публикации и ценой
+class Book {
+    // Приватное поле price
     #price;
 
-    /**
-     * Конструктор для создания экземпляр книги
-     * @param {string} title - Название книги (не может быть пустой строкой)
-     * @param {number} pubYear - Год издания (положительное число)
-     * @param {number} price - Цена книги (положительное число)
-     * @throws {Error} Если валидация не пройдена
-     */
     constructor(title, pubYear, price) {
-        this.title = title; 
-        this._pubYear = pubYear;
+        let storedTitle;
+        Object.defineProperty(this, 'title', {
+            get() {
+                return storedTitle;
+            },
+            set(value) {
+                if (value === "") {
+                    throw new Error("Заголовок не может быть пустым");
+                }
+                storedTitle = value;
+            },
+            enumerable: true,
+            configurable: true
+        });
+
+        // Инициализация через сеттеры
+        this.title = title;
+        this.pubYear = pubYear;
         this.#price = price;
     }
 
-    /**
-     * Сеттер для названия книги
-     * @param {string} value - Новое название
-     * @throws {Error} Если название - пустая строка
-     */
-    set title(value) {
-        if (typeof value !== 'string' || value.trim() === '') {
-            throw new Error('Название книги не может быть пустой строкой');
-        }
-        this.title = value;  
-    }
-
-    /**
-     * Геттер для названия книги
-     * @returns {string} Название книги
-     */
-    get title() {
-        return this.title;
-    }
-
-    /**
-     * Геттер для года издания
-     * @returns {number} Год издания
-     */
+    // Геттер для получения года публикации книги
     get pubYear() {
         return this._pubYear;
     }
 
-    /**
-     * Сеттер для года издания
-     * @param {number} value - Новый год издания
-     * @throws {Error} Если значение не является положительным числом
-     */
+    // Сеттер для установки года публикации книги
     set pubYear(value) {
-        if (typeof value !== 'number' || isNaN(value) || value <= 0) {
-            throw new Error('Год издания должен быть положительным числом');
+        if (value <= 0) {
+            throw new Error("Год публикации должен быть положительным числом");
         }
         this._pubYear = value;
     }
 
-    /**
-     * Геттер для цены книги
-     * @returns {number} Цена книги
-     */
+    // Геттер для получения цены книги
     get price() {
         return this.#price;
     }
 
-    /**
-     * Сеттер для цены книги
-     * @param {number} value - Новая цена
-     * @throws {Error} Если значение не является положительным числом
-     */
+    // Сеттер для установки цены книги
     set price(value) {
-        if (typeof value !== 'number' || isNaN(value) || value <= 0) {
-            throw new Error('Цена должна быть положительным числом');
+        if (value <= 0) {
+            throw new Error("Цена должна быть положительным числом");
         }
         this.#price = value;
     }
 
-    /**
-     * Метод, который выводит в консоль название и цену книги
-     */
+    // Метод для вывода заголовка и цены книги в консоль
     show() {
-        console.log(`Книга: "${this.title}", Цена: ${this.#price} руб.`);
+        console.log(`${this.title}: ${this.#price}`);
     }
 
-    /**
-     * Статический метод для сравнения книг по году издания
-     * @param {Book} a - Первая книга
-     * @param {Book} b - Вторая книга
-     * @returns {number} -1, если a раньше b; 1, если a позже b; 0, если равны
-     */
+    // Статический метод для сравнения книг по году публикации
     static compare(a, b) {
-        if (a._pubYear < b._pubYear) return -1;
-        if (a._pubYear > b._pubYear) return 1;
-        return 0;
+        return a.pubYear - b.pubYear;
     }
 }
 
-export function isEmpty(obj) {
-    return Reflect.ownKeys(obj).length === 0;
+// Функция для проверки, пуст ли объект, включая неперечисляемые свойства
+function isEmpty(obj) {
+    return Object.getOwnPropertyNames(obj).length === 0 && Object.getOwnPropertySymbols(obj).length === 0;
 }
 
-export function addClassMethods(obj) {
-    obj.addClass = function(cls) {
-        const classes = this.className ? this.className.split(' ') : [];
-        if (!classes.includes(cls)) {
-            classes.push(cls);
-            this.className = classes.join(' ');
+// Объект с методами для работы с классами
+let obj = {
+    className: 'open menu',
+    // Метод для добавления класса, если его еще нет
+    addClass: function (cls) {
+        if (!this.className.split(' ').includes(cls)) {
+            this.className += ' ' + cls;
         }
+        this.className = this.className.trim();
         return this;
-    };
-
-    obj.removeClass = function(cls) {
-        const classes = this.className ? this.className.split(' ') : [];
-        const index = classes.indexOf(cls);
+    },
+    // Метод для удаления класса, если он существует
+    removeClass: function (cls) {
+        let classes = this.className.split(' ');
+        let index = classes.indexOf(cls);
         if (index !== -1) {
             classes.splice(index, 1);
             this.className = classes.join(' ');
         }
         return this;
-    };
+    }
+};
 
-    return obj;
+const jsonStr = JSON.stringify(obj, null, 2);
+console.log("JSON представление объекта obj:");
+console.log(jsonStr);
+
+const obj2 = JSON.parse(jsonStr);
+console.log("Объект после декодирования:", obj2);
+console.log("Равенство className:", obj.className === obj2.className);
+
+// Функция для получения количества секунд с начала текущего дня
+function getSecondsToday() {
+    let now = new Date();
+    let today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    let diff = now - today;
+    return Math.floor(diff / 1000);
 }
 
-export function getSecondsToday() {
-    const now = new Date();
-    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    return Math.floor((now - startOfDay) / 1000);
-}
-
-export function formatDate(date) {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = String(date.getFullYear()).slice(-2);
-    return `${day}.${month}.${year}`;
-}
-
-export function deepEqual(obj1, obj2) {
-    return JSON.stringify(obj1) === JSON.stringify(obj2);
+// Функция для форматирования даты в строку формата "дд.мм.гг"
+function formatDate(date) {
+    let day = date.getDate();
+    let month = date.getMonth() + 1;
+    let year = date.getFullYear().toString().substr(-2);
+    return `${day < 10 ? '0' + day : day}.${month < 10 ? '0' + month : month}.${year}`;
 }
