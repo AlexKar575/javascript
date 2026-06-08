@@ -218,13 +218,18 @@
             });
         });
 
-        describe("formatDate", function () {
-            it("let date = new Date(2023, 0, 1);=> 01.01.23", function () {
-                let date = new Date(2023, 0, 1);
-                assert.strictEqual(formatDate(date), "01.01.23");
-                console.log("Форматированная дата: " + formatDate(date));
-            });
-        });
+       describe("formatDate", function () {
+    it("дата должна быть 15.09.06", function () {
+        // Создаем объект даты для 15 сентября 2006 года.
+        // Важно: месяцы в JavaScript считаются с 0 (январь - 0), поэтому сентябрь - это 8.
+        let date = new Date(2006, 8, 15);
+
+        
+        assert.strictEqual(formatDate(date), "15.09.06");
+
+        console.log("Форматированная дата: " + formatDate(date));
+    });
+});
     </script>
 
     <div id="mocha"></div>
