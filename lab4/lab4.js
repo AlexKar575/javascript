@@ -1,76 +1,124 @@
-// Класс Book выводит книгу с заголовком, годом публикации и ценой
+// Класс Book представляет книгу с названием, годом публикации и ценой
 class Book {
-    // Приватное поле price
+    // Защищённые поля (доступны по соглашению внутри класса и наследникам)
+    _title;
+    _pubYear;
+    
+    // Приватное поле (доступно только внутри класса)
     #price;
 
+    /**
+     * Создает объект книги.
+     * @param {string} title - название книги
+     * @param {number} pubYear - год публикации
+     * @param {number} price - цена книги
+     */
     constructor(title, pubYear, price) {
-        let storedTitle;
-        Object.defineProperty(this, 'title', {
-            get() {
-                return storedTitle;
-            },
-            set(value) {
-                if (value === "") {
-                    throw new Error("Заголовок не может быть пустым");
-                }
-                storedTitle = value;
-            },
-            enumerable: true,
-            configurable: true
-        });
-
-        // Инициализация через сеттеры
         this.title = title;
         this.pubYear = pubYear;
         this.#price = price;
     }
 
-    // Геттер для получения года публикации книги
+    /**
+     * Возвращает название книги.
+     */
+    get title() {
+        return this._title;
+    }
+
+    /**
+     * Устанавливает название книги.
+     * Заголовок не может быть пустым.
+     */
+    set title(value) {
+        if (typeof value !== 'string' || value.trim() === '') {
+            throw new Error("Заголовок не может быть пустым");
+        }
+        this._title = value;
+    }
+
+    /**
+     * Возвращает год публикации книги.
+     */
     get pubYear() {
         return this._pubYear;
     }
 
-    // Сеттер для установки года публикации книги
+    /**
+     * Устанавливает год публикации книги.
+     * Год должен быть положительным целым числом.
+     */
     set pubYear(value) {
-        if (value <= 0) {
-            throw new Error("Год публикации должен быть положительным числом");
+        if (
+            typeof value !== 'number' ||
+            !Number.isInteger(value) ||
+            value <= 0
+        ) {
+            throw new Error("Год публикации должен быть положительным целым числом");
         }
         this._pubYear = value;
     }
 
-    // Геттер для получения цены книги
+    /**
+     * Возвращает цену книги.
+     */
     get price() {
         return this.#price;
     }
 
-    // Сеттер для установки цены книги
+    /**
+     * Устанавливает цену книги.
+     * Цена должна быть положительным числом.
+     */
     set price(value) {
-        if (value <= 0) {
+        if (
+            typeof value !== 'number' ||
+            !Number.isFinite(value) ||
+            value <= 0
+        ) {
             throw new Error("Цена должна быть положительным числом");
         }
         this.#price = value;
     }
 
-    // Метод для вывода заголовка и цены книги в консоль
+    /**
+     * Выводит название и цену книги в консоль.
+     */
     show() {
-        console.log(`${this.title}: ${this.#price}`);
+        console.log(`${this.title}: ${this.price}`);
     }
 
-    // Статический метод для сравнения книг по году публикации
+    /**
+     * Сравнивает две книги по году публикации.
+     * @param {Book} a - первая книга
+     * @param {Book} b - вторая книга
+     * @returns {number}
+     */
     static compare(a, b) {
         return a.pubYear - b.pubYear;
     }
 }
 
-// Функция для проверки, пуст ли объект, включая неперечисляемые свойства
+/**
+ * Проверяет, является ли объект пустым.
+ * Учитываются обычные и символьные свойства.
+ * @param {Object} obj
+ * @returns {boolean}
+ */
 function isEmpty(obj) {
-    return Object.getOwnPropertyNames(obj).length === 0 && Object.getOwnPropertySymbols(obj).length === 0;
+    return Object.getOwnPropertyNames(obj).length === 0 &&
+           Object.getOwnPropertySymbols(obj).length === 0;
 }
 
-// Объект с методами для работы с классами
+// Объект для работы с CSS-классами
 let obj = {
     className: 'open menu',
-    // Метод для добавления класса, если его еще нет
+
+    /**
+     * Добавляет класс, если его еще нет.
+     * @param {string} cls
+     * @returns {Object}
+     */
     addClass: function (cls) {
         if (!this.className.split(' ').includes(cls)) {
             this.className += ' ' + cls;
@@ -78,41 +126,64 @@ let obj = {
         this.className = this.className.trim();
         return this;
     },
-    // Метод для удаления класса, если он существует
+
+    /**
+     * Удаляет класс, если он существует.
+     * @param {string} cls
+     * @returns {Object}
+     */
     removeClass: function (cls) {
         let classes = this.className.split(' ');
         let index = classes.indexOf(cls);
+
         if (index !== -1) {
             classes.splice(index, 1);
             this.className = classes.join(' ');
         }
+
         return this;
     }
 };
 
+// Преобразование объекта в JSON
 const jsonStr = JSON.stringify(obj, null, 2);
+
 console.log("JSON представление объекта obj:");
 console.log(jsonStr);
 
+// Восстановление объекта из JSON
 const obj2 = JSON.parse(jsonStr);
+
 console.log("Объект после декодирования:", obj2);
 console.log("Равенство className:", obj.className === obj2.className);
 
-// Функция для получения количества секунд с начала текущего дня
+/**
+ * Возвращает количество секунд,
+ * прошедших с начала текущего дня.
+ * @returns {number}
+ */
 function getSecondsToday() {
     let now = new Date();
-    let today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    let today = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate()
+    );
+
     let diff = now - today;
+
     return Math.floor(diff / 1000);
 }
 
-// Функция для форматирования даты в строку формата "дд.мм.гг"
-// Функция для форматирования даты в строку формата "дд.мм.гггг"
+/**
+ * Форматирует дату в строку вида "дд.мм.гг".
+ * @param {Date} date
+ * @returns {string}
+ */
 function formatDate(date) {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Месяцы от 0 до 11
-    const year = date.getFullYear(); // Возвращает полный год, например 2026
+    let day = date.getDate();
+    let month = date.getMonth() + 1;
+    let year = date.getFullYear().toString().slice(-2);
 
-    return `${day}.${month}.${year}`;
-}
+    return `${day < 10 ? '0' + day : day}.${month < 10 ? '0' + month : month}.${year}`;
 }
