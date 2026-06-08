@@ -1,5 +1,6 @@
 /**
  * Класс для представления книги с валидацией свойств.
+ * Реализованы публичные свойства с геттерами и сеттерами для совместимости с тестами.
  */
 class Book {
     /**
@@ -9,44 +10,61 @@ class Book {
      * @param {number} price - Цена книги.
      */
     constructor(title, pubYear, price) {
-        // Приватная переменная для свойства 'title'
-        let _title;
-        Object.defineProperty(this, 'title', {
-            get() {
-                return _title;
-            },
-            set(value) {
-                if (value === "") {
-                    throw new Error("Заголовок не может быть пустым");
-                }
-                _title = value;
-            },
-            enumerable: true,
-            configurable: true
-        });
-
-        this.title = title; // Используем сеттер для валидации
-
-        if (pubYear <= 0) {
-            throw new Error("Год публикации должен быть положительным числом");
-        }
+        // Используем сеттеры для валидации при инициализации
+        this.title = title;
         this.pubYear = pubYear;
-
-        if (price <= 0) {
-            throw new Error("Цена должна быть положительным числом");
-        }
-        // Инициализируем приватное поле #price
-        this.#price = price;
+        this.price = price;
     }
 
-    /** @private Приватное поле для хранения цены */
-    #price;
+    // Приватные поля для хранения данных
+    #_title;
+    #_pubYear;
+    #_price;
+
+    /**
+     * Геттер и сеттер для заголовка с валидацией.
+     */
+    get title() {
+        return this.#_title;
+    }
+    set title(value) {
+        if (value === "" || value === undefined) {
+            throw new Error("Заголовок не может быть пустым");
+        }
+        this.#_title = value;
+    }
+
+    /**
+     * Геттер и сеттер для года публикации с валидацией.
+     */
+    get pubYear() {
+        return this.#_pubYear;
+    }
+    set pubYear(value) {
+        if (value <= 0) {
+            throw new Error("Год публикации должен быть положительным числом");
+        }
+        this.#_pubYear = value;
+    }
+
+    /**
+     * Геттер и сеттер для цены с валидацией.
+     */
+    get price() {
+        return this.#_price;
+    }
+    set price(value) {
+        if (value <= 0) {
+            throw new Error("Цена должна быть положительным числом");
+        }
+        this.#_price = value;
+    }
 
     /**
      * Выводит заголовок и цену книги в консоль.
      */
     show() {
-        console.log(`${this.title}: ${this.#price}`); // Обращаемся к приватному полю
+        console.log(`${this.title}: ${this.price}`);
     }
 
     /**
@@ -80,10 +98,6 @@ function isEmpty(obj) {
  * Класс для управления строкой классов (аналог classList).
  */
 class ClassListManager {
-    /**
-     * Создает менеджер классов.
-     * @param {string} initialClasses - Начальная строка классов.
-     */
     constructor(initialClasses = '') {
         this.#classes = initialClasses.trim().split(/\s+/).filter(Boolean);
     }
@@ -91,19 +105,10 @@ class ClassListManager {
     /** @private */
     #classes;
 
-    /**
-     * Возвращает строку классов.
-     * @returns {string}
-     */
     get className() {
         return this.#classes.join(' ');
     }
 
-    /**
-     * Добавляет класс, если его еще нет.
-     * @param {string} cls - Имя класса для добавления.
-     * @returns {ClassListManager}
-     */
     addClass(cls) {
         if (!this.#classes.includes(cls)) {
             this.#classes.push(cls);
@@ -111,11 +116,6 @@ class ClassListManager {
         return this;
     }
 
-    /**
-     * Удаляет класс, если он существует.
-     * @param {string} cls - Имя класса для удаления.
-     * @returns {ClassListManager}
-     */
     removeClass(cls) {
         const index = this.#classes.indexOf(cls);
         if (index !== -1) {
@@ -123,6 +123,35 @@ class ClassListManager {
         }
         return this;
     }
+}
+
+
+/**
+ * ФУНКЦИИ ДЛЯ ТЕСТОВ (добавлены для соответствия требованиям)
+ */
+
+/**
+ * Добавляет класс к строке классов, если его еще нет.
+ * @param {string} str - Текущая строка классов.
+ * @param {string} cls - Имя класса для добавления.
+ * @returns {string} Обновленная строка классов.
+ */
+function addClass(str, cls) {
+   const manager = new ClassListManager(str);
+   manager.addClass(cls);
+   return manager.className;
+}
+
+/**
+ * Удаляет класс из строки классов, если он существует.
+ * @param {string} str - Текущая строка классов.
+ * @param {string} cls - Имя класса для удаления.
+ * @returns {string} Обновленная строка классов.
+ */
+function removeClass(str, cls) {
+   const manager = new ClassListManager(str);
+   manager.removeClass(cls);
+   return manager.className;
 }
 
 
@@ -145,11 +174,10 @@ function getSecondsToday() {
 function formatDate(date) {
     const day = date.getDate();
     const month = date.getMonth() + 1;
-    const year = date.getFullYear();
 
     const pad = (n) => n < 10 ? '0' + n : n;
 
-    return `${pad(day)}.${pad(month)}.${year}`;
+    return `${pad(day)}.${pad(month)}.${date.getFullYear()}`;
 }
 
 
@@ -175,9 +203,16 @@ function runDemo() {
         console.log("\n--- Демонстрация работы класса Book ---");
         myBook.show(); // Выведет: Война и мир: 500
 
-        // Попытка прямого доступа к приватному свойству вызовет ошибку
-        // console.log(myBook.price); // undefined
-        // console.log(myBook.#price); // SyntaxError: Private field '#price' must be declared in an enclosing class
+        // Проверка работы сеттеров (валидация)
+        myBook.title = "Преступление и наказание";
+        console.log("Новое название:", myBook.title);
+
+        // Проверка валидации цены через сеттер
+        try {
+            myBook.price = -100;
+        } catch (e) {
+            console.log("Ошибка при установке цены:", e.message); // Выведет сообщение об ошибке
+        }
 
     } catch (e) {
         console.error(e.message);
