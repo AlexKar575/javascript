@@ -107,9 +107,12 @@ function getSecondsToday() {
 }
 
 // Функция для форматирования даты в строку формата "дд.мм.гг"
+// Функция для форматирования даты в строку формата "дд.мм.гггг"
 function formatDate(date) {
-    let day = date.getDate();
-    let month = date.getMonth() + 1;
-    let year = date.getFullYear().toString().substr(-2);
-    return `${day < 10 ? '0' + day : day}.${month < 10 ? '0' + month : month}.${year}`;
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Месяцы от 0 до 11
+    const year = date.getFullYear(); // Возвращает полный год, например 2026
+
+    return `${day}.${month}.${year}`;
+}
 }
