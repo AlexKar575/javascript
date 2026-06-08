@@ -219,9 +219,9 @@
         });
 
         describe("formatDate", function () {
-            it("let date = new Date(2023, 0, 1);=> 01.01.23", function () {
+            it("let date = new Date(2025, 0, 1);=> 01.01.25", function () {
                 let date = new Date(2023, 0, 1);
-                assert.strictEqual(formatDate(date), "01.01.23");
+                assert.strictEqual(formatDate(date), "01.01.25");
                 console.log("Форматированная дата: " + formatDate(date));
             });
         });
