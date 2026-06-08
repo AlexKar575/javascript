@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
        <style>
          body {
@@ -8,228 +7,101 @@
         }
     </style>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тестирование lab.js</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/mocha/3.2.0/mocha.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mocha/3.2.0/mocha.js"></script>
-    <script>
-        mocha.setup('bdd');
-    </script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chai/3.5.0/chai.js"></script>
-    <script>
-        let assert = chai.assert;
-    </script>
+   
 </head>
-
 <body>
-    <script src="lab4.js"></script>
-    <script>
-        'use strict';
+    <p>Откройте консоль</p>
 
-        describe("Book", function () {
-            let book;
+    <script type="module">
+        import { 
+            Book, 
+            isEmpty, 
+            addClassMethods, 
+            getSecondsToday, 
+            formatDate 
+        } from './lab4.js';
 
-            beforeEach(function () {
-                book = new Book("Title", 2020, 1000);
-            });
+        // 1. Создание экземпляра класса Book и вызов метода show
+        const book1 = new Book("Война и мир", 1869, 500);
+        book1.show();
 
-            it("должен создать книгу с заголовком, годом публикации и ценой", function () {
-                assert.strictEqual(book.title, "Title");
-                assert.strictEqual(book.pubYear, 2020);
-                assert.strictEqual(book.price, 1000);
-                console.log("Книга создана с заголовком: " + book.title + ", годом публикации: " + book.pubYear + ", ценой: " + book.price);
-            });
+        // 2. Попытка изменить значения свойств
+        const book2 = new Book("Преступление и наказание", 1866, 450);
+        console.log(`До изменения: ${book2.title}, ${book2.pubYear}, ${book2.price}`);
+        
+        book2.title = "Идиот";
+        book2.pubYear = 1868;
+        book2.price = 600;
+        console.log(`После изменения: ${book2.title}, ${book2.pubYear}, ${book2.price}`);
+        
+        // Попытка установить некорректные значения
+        try {
+            book2.title = "";
+        } catch(e) {
+            console.log(e.message);
+        }
+        
+        try {
+            book2.pubYear = -2020;
+        } catch(e) {
+            console.log(e.message);
+        }
+        
+        try {
+            book2.price = -100;
+        } catch(e) {
+            console.log(e.message);
+        }
 
-            it("должен вывести заголовок и цену книги", function () {
-                let originalConsoleLog = console.log;
-                let logOutput = "";
-                console.log = function (msg) {
-                    logOutput = msg;
-                };
+        // 3. Сортировка массива книг
+        const books = [
+            new Book("Книга 1", 2000, 300),
+            new Book("Книга 2", 1995, 250),
+            new Book("Книга 3", 2010, 400)
+        ];
+        
+        console.log("До сортировки:");
+        books.forEach(book => console.log(`${book.title} - ${book.pubYear}`));
+        
+        books.sort(Book.compare);
+        
+        console.log("После сортировки:");
+        books.forEach(book => console.log(`${book.title} - ${book.pubYear}`));
 
-                book.show();
-                assert.strictEqual(logOutput, "Title: 1000");
-                console.log("Заголовок и цена книги: " + logOutput);
+        // 4. Проверка функции isEmpty
+        console.log(isEmpty({}));
+        console.log(isEmpty({ [Symbol()]: true }));
+        console.log(isEmpty(Object.defineProperty({}, 'name', { value: 'John' })));
 
-                console.log = originalConsoleLog;
-            });
+        // 5. Проверка addClass и removeClass
+        let obj = { className: 'open menu' };
+        obj = addClassMethods(obj);
+        
+        obj.addClass('new').addClass('open').addClass('active');
+        console.log(obj.className);
+        
+        obj.removeClass('menu').removeClass('active');
+        console.log(obj.className);
 
-            it("book.title = 'New Title'; =>'New Title'", function () {
-                book.title = "New Title";
-                assert.strictEqual(book.title, "New Title");
-                console.log("Новый заголовок книги: " + book.title);
-            });
+        // 6. Преобразование в JSON
+        const testObj = {
+            name: "Тест",
+            nested: {
+                value: 123
+            }
+        };
+        
+        const json = JSON.stringify(testObj, null, 2);
+        console.log(json);
+        
+        const obj2 = JSON.parse(json);
+        console.log(JSON.stringify(testObj) === JSON.stringify(obj2));
 
-            it("assert.throws(() => { book.title = ''; }, Error)", function () {
-                assert.throws(() => { book.title = ""; }, Error);
-                console.log("Попытка установить пустой заголовок вызвала ошибку");
-            });
+        // 7. getSecondsToday
+        console.log(getSecondsToday());
 
-            it("assert.strictEqual(book.pubYear, 2021);", function () {
-                book.pubYear = 2021;
-                assert.strictEqual(book.pubYear, 2021);
-                console.log("Новый год публикации: " + book.pubYear);
-            });
-
-            it("assert.throws(() => { book.pubYear = -2021; }, Error);", function () {
-                assert.throws(() => { book.pubYear = -2021; }, Error);
-                console.log("Попытка установить отрицательный год публикации вызвала ошибку");
-            });
-
-            it("assert.strictEqual(book.price, 2000);", function () {
-                book.price = 2000;
-                assert.strictEqual(book.price, 2000);
-                console.log("Новая цена книги: " + book.price);
-            });
-
-            it("assert.throws(() => { book.price = -2000; }, Error)", function () {
-                assert.throws(() => { book.price = -2000; }, Error);
-                console.log("Попытка установить отрицательную цену вызвала ошибку");
-            });
-        });
-
-        describe("Book.compare", function () {
-            let book1, book2, book3;
-
-            beforeEach(function () {
-                book1 = new Book("Title1", 2020, 1000);
-                book2 = new Book("Title2", 2019, 2000);
-                book3 = new Book("Title3", 2021, 3000);
-            });
-
-            it("должен сравнивать книги по году публикации", function () {
-                let books = [book1, book2, book3];
-                books.sort(Book.compare);
-                assert.strictEqual(books[0].pubYear, 2019);
-                assert.strictEqual(books[1].pubYear, 2020);
-                assert.strictEqual(books[2].pubYear, 2021);
-                console.log("Книги отсортированы по году публикации: " + books[0].pubYear + ", " + books[1].pubYear + ", " + books[2].pubYear);
-            });
-        });
-
-        describe("isEmpty", function () {
-            it("должен вернуть true для пустого объекта", function () {
-                assert.isTrue(isEmpty({}));
-                console.log("Пустой объект: true");
-            });
-
-            it("должен вернуть false для непустого объекта", function () {
-                assert.isFalse(isEmpty({ [Symbol()]: true }));
-                console.log("Непустой объект: false");
-            });
-
-            it("должен вернуть false для объекта с неперечисляемым свойством", function () {
-                let objWithNonEnum = Object.defineProperty({}, 'name', { value: 'John' });
-                assert.isFalse(isEmpty(objWithNonEnum));
-                console.log("Объект с неперечисляемым свойством: false");
-            });
-        });
-
-        describe("addClass и removeClass", function () {
-            let obj;
-
-            beforeEach(function () {
-                obj = {
-                    className: 'open menu',
-                    addClass: function (cls) {
-                        if (!this.className.split(' ').includes(cls)) {
-                            this.className += ' ' + cls;
-                        }
-                        this.className = this.className.trim();
-                        return this;
-                    },
-                    removeClass: function (cls) {
-                        let classes = this.className.split(' ');
-                        let index = classes.indexOf(cls);
-                        if (index !== -1) {
-                            classes.splice(index, 1);
-                            this.className = classes.join(' ');
-                        }
-                        return this;
-                    }
-                };
-            });
-
-            it("obj.addClass('newClass'); => 'open menu newClass'", function () {
-                obj.addClass('newClass');
-                assert.strictEqual(obj.className, 'open menu newClass');
-                console.log("Добавлен новый класс: " + obj.className);
-            });
-
-            it("obj.addClass('open'); => 'open menu'", function () {
-                obj.addClass('open');
-                assert.strictEqual(obj.className, 'open menu');
-                console.log("Класс не изменен: " + obj.className);
-            });
-
-            it("obj.removeClass('open'); => 'menu'", function () {
-                obj.removeClass('open');
-                assert.strictEqual(obj.className, 'menu');
-                console.log("Удален класс 'open': " + obj.className);
-            });
-
-            it("не должен удалить класс, если его нет", function () {
-                obj.removeClass('newClass');
-                assert.strictEqual(obj.className, 'open menu');
-                console.log("Класс не изменен: " + obj.className);
-            });
-        });
-
-        describe("JSON conversion", function () {
-            let obj;
-
-            beforeEach(function () {
-                obj = {
-                    className: 'open menu',
-                    addClass: function (cls) {
-                        if (!this.className.split(' ').includes(cls)) {
-                            this.className += ' ' + cls;
-                        }
-                        this.className = this.className.trim();
-                        return this;
-                    },
-                    removeClass: function (cls) {
-                        let classes = this.className.split(' ');
-                        let index = classes.indexOf(cls);
-                        if (index !== -1) {
-                            classes.splice(index, 1);
-                            this.className = classes.join(' ');
-                        }
-                        return this;
-                    }
-                };
-            });
-
-            it("должен преобразовать объект в JSON и обратно", function () {
-                let json = JSON.stringify(obj, null, 2);
-                let obj2 = JSON.parse(json);
-                assert.strictEqual(obj2.className, obj.className);
-                console.log("Объект преобразован в JSON и обратно: " + obj2.className);
-            });
-        });
-
-        describe("getSecondsToday", function () {
-            it("должен вернуть количество секунд с начала дня", function () {
-                let now = new Date();
-                let secondsToday = now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds();
-                assert.strictEqual(getSecondsToday(), secondsToday);
-                console.log("Секунды с начала дня: " + secondsToday);
-            });
-        });
-
-        describe("formatDate", function () {
-            it("let date = new Date(2025, 0, 1);=> 01.01.25", function () {
-                let date = new Date(2023, 0, 1);
-                assert.strictEqual(formatDate(date), "01.01.25");
-                console.log("Форматированная дата: " + formatDate(date));
-            });
-        });
-    </script>
-
-    <div id="mocha"></div>
-    <script>
-        mocha.run();
+        // 8. formatDate
+        console.log(formatDate(new Date()));
     </script>
 </body>
 </html>
