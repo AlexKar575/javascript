@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Редактируемая таблица</title>
+    <title>Редактируемая таблица 6x7</title>
     <style>
         body {
-            background-color: #fde6fa; 
+            background-color: #fde6fa;
+            font-family: Arial, sans-serif;
         }
         table {
             border-collapse: collapse;
@@ -14,15 +15,17 @@
             max-width: 1200px;
             margin: 20px auto;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border: 2px solid brown; /* Добавил рамку для наглядности */
         }
 
         th,
         td {
-            border: 1px solid brown; 
+            border: 1px solid brown;
             padding: 15px;
             text-align: center;
             position: relative; /* Нужно для позиционирования кнопок */
-            vertical-align: top; /* Выравнивает содержимое по верху */
+            vertical-align: top;
+            cursor: pointer; /* Подсказка, что ячейку можно кликнуть */
         }
 
         th {
@@ -38,7 +41,7 @@
             width: 95%; /* Чуть меньше ширины ячейки */
             height: 100%;
             box-sizing: border-box;
-            resize: none;
+            resize: none; /* Запрещаем изменение размера */
             outline: none;
             border-radius: 3px;
         }
@@ -74,132 +77,149 @@
 </head>
 <body>
 
-<table id="editable-table">
-    <thead>
-        <tr>
-            <th>Колонка 1</th>
-            <th>Колонка 2</th>
-            <th>Колонка 3</th>
-            <th>Колонка 4</th>
-            <th>Колонка 5</th>
-            <th>Колонка 6</th>
-            <th>Колонка 7</th>
-        </tr>
-    </thead>
-    <tbody>
-        <!-- Строки будут загружены сюда скриптом -->
-    </tbody>
-</table>
+    <table id="editable-table">
+        <thead>
+            <tr>
+                <th>Колонка 1</th>
+                <th>Колонка 2</th>
+                <th>Колонка 3</th>
+                <th>Колонка 4</th>
+                <th>Колонка 5</th>
+                <th>Колонка 6</th>
+                <th>Колонка 7</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Строки будут загружены сюда скриптом -->
+        </tbody>
+    </table>
 
-<script>
-     'use strict';
-     
-    const TABLE_ID = 'editable-table';
-    const STORAGE_KEY = 'editableTableData'; // Ключ для localStorage
-    let tbody = null;
+    <script>
+         'use strict';
+         
+        const TABLE_ID = 'editable-table';
+        const STORAGE_KEY = 'editableTableData'; // Ключ для sessionStorage
+        let tbody = null;
 
-    document.addEventListener('DOMContentLoaded', function () {
-        tbody = document.querySelector(`#${TABLE_ID} tbody`);
+        document.addEventListener('DOMContentLoaded', function () {
+            tbody = document.querySelector(`#${TABLE_ID} tbody`);
 
-        // 1. ЗАГРУЗКА ДАННЫХ ИЗ LOCALSTORAGE
-        loadTableFromStorage();
+            // 1. ЗАГРУЗКА ДАННЫХ ИЗ SESSIONSTORAGE
+            loadTableFromStorage();
 
-        // 2. НАЧАЛО РЕДАКТИРОВАНИЯ
-        document.getElementById(TABLE_ID).addEventListener('click', function (event) {
-            if (document.querySelector('td.editing')) return; // Не даем открыть вторую ячейку
+             // Если данных нет (первый визит), создаем начальную таблицу 6x7
+             if (tbody.innerHTML.trim() === '') {
+                 let initialRowsHtml = '';
+                 for (let i = 0; i < 6; i++) { // Создаем 6 строк
+                     let cellsHtml = '';
+                     for (let j = 0; j < 7; j++) { // В каждой строке по 7 ячеек
+                         cellsHtml += `<td>Ячейка ${i+1},${j+1}</td>`;
+                     }
+                     initialRowsHtml += `<tr>${cellsHtml}</tr>`;
+                 }
+                 tbody.innerHTML = initialRowsHtml;
+                 // Сохраняем начальное состояние в хранилище
+                 saveTableToStorage();
+             }
 
-            let target = event.target.closest('td');
-            if (target && !target.classList.contains('editing')) {
-                startEditing(target);
-            }
-        });
-    });
-
-    function startEditing(td) {
-        td.classList.add('editing');
-        const originalHtml = td.innerHTML;
-        td.setAttribute('original-html', originalHtml);
-
-        td.innerHTML = `
-            <textarea>${escapeHtml(originalHtml)}</textarea>
-            <div class="edit-buttons">
-                <button class="ok-button">OK</button>
-                <button class="cancel-button">ОТМЕНА</button>
-            </div>
-        `;
-
-        td.querySelector('textarea').focus();
-
-        // Навешиваем обработчики на новые кнопки
-        td.querySelector('.ok-button').addEventListener('click', function () {
-            finishEditing(td, true);
-        });
-
-        td.querySelector('.cancel-button').addEventListener('click', function () {
-            finishEditing(td, false);
-        });
-    }
-
-    function finishEditing(td, isSave) {
-        const newValue = td.querySelector('textarea').value;
-        const originalHtml = td.getAttribute('original-html');
-
-        td.innerHTML = isSave ? newValue : originalHtml;
-        td.classList.remove('editing');
-
-        // 3. СОХРАНЕНИЕ В LOCALSTORAGE ТОЛЬКО ПРИ УСПЕШНОМ РЕДАКТИРОВАНИИ
-        if (isSave) {
-            saveTableToStorage();
-        }
-    }
-
-    function escapeHtml(str) {
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
-    }
-
-    // --- ФУНКЦИИ ДЛЯ РАБОТЫ С LOCALSTORAGE ---
-
-    /**
-     * Сохраняет текущее состояние таблицы в localStorage.
-     */
-    function saveTableToStorage() {
-        const rowsData = [];
-        tbody.querySelectorAll('tr').forEach(row => {
-            const cellsData = Array.from(row.cells).map(cell => cell.innerHTML.trim());
-            rowsData.push(cellsData);
-        });
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(rowsData));
-    }
-
-    /**
-     * Загружает таблицу из localStorage, если там есть данные.
-     */
-    function loadTableFromStorage() {
-        const savedData = localStorage.getItem(STORAGE_KEY);
-        if (!savedData) return; // Если данных нет, ничего не делаем
-
-        try {
-            const data = JSON.parse(savedData);
-            
-            // Генерируем HTML-код для строк таблицы
-            let rowsHtml = '';
-            data.forEach(rowData => {
-                const cellsHtml = rowData.map(cellData => `<td>${cellData}</td>`).join('');
-                rowsHtml += `<tr>${cellsHtml}</tr>`;
-            });
-
-            // Вставляем сгенерированные строки в tbody
-            tbody.innerHTML = rowsHtml;
-        } catch (e) {
-            console.error("Ошибка при загрузке данных из localStorage:", e);
-        }
-    }
-});
-</script>
+             // 2. НАЧАЛО РЕДАКТИРОВАНИЯ (Делегирование событий на таблицу)
+             document.getElementById(TABLE_ID).addEventListener('click', function (event) {
+                 
+                 // Пока одна ячейка редактируется, игнорируем клики по другим
+                 if (document.querySelector('td.editing')) return; 
+ 
+                 let target = event.target.closest('td');
+                 
+                 // Проверяем, что клик был по ячейке (<td>) и она не в режиме редактирования
+                 if (target && !target.classList.contains('editing')) {
+                     startEditing(target);
+                     event.stopPropagation(); // Останавливаем всплытие
+                 }
+             });
+         });
+ 
+         function startEditing(td) {
+             td.classList.add('editing');
+             const originalHtml = td.innerHTML;
+             td.setAttribute('original-html', originalHtml);
+ 
+             td.innerHTML = `
+                 <textarea>${escapeHtml(originalHtml)}</textarea>
+                 
+                 <div class="edit-buttons">
+                     <button class="ok-button">OK</button>
+                     <button class="cancel-button">ОТМЕНА</button>
+                 </div>
+             `;
+ 
+             td.querySelector('textarea').focus();
+ 
+             td.querySelector('.ok-button').addEventListener('click', function () {
+                  finishEditing(td, true);
+              });
+ 
+              td.querySelector('.cancel-button').addEventListener('click', function () {
+                  finishEditing(td, false);
+              });
+         }
+ 
+         function finishEditing(td, isSave) {
+             const newValue = td.querySelector('textarea').value;
+             const originalHtml = td.getAttribute('original-html');
+ 
+             td.innerHTML = isSave ? newValue : originalHtml;
+             td.classList.remove('editing');
+ 
+             // СОХРАНЕНИЕ В SESSIONSTORAGE ТОЛЬКО ПРИ УСПЕШНОМ РЕДАКТИРОВАНИИ (нажатие OK)
+             if (isSave) {
+                  saveTableToStorage();
+              }
+         }
+ 
+         function escapeHtml(str) {
+              return str.replace(/[&<>]/g, function(m) {
+                  if (m === '&') return '&amp;';
+                  if (m === '<') return '&lt;';
+                  if (m === '>') return '&gt;';
+                  return m;
+              });
+          }
+ 
+         // --- ФУНКЦИИ ДЛЯ РАБОТЫ С SESSIONSTORAGE ---
+ 
+         /**
+          * Сохраняет текущее состояние таблицы в sessionStorage.
+          */
+         function saveTableToStorage() {
+              const rowsData = [];
+              tbody.querySelectorAll('tr').forEach(row => {
+                  const cellsData = Array.from(row.cells).map(cell => cell.innerHTML.trim());
+                  rowsData.push(cellsData);
+              });
+              sessionStorage.setItem(STORAGE_KEY, JSON.stringify(rowsData));
+          }
+ 
+         /**
+          * Загружает таблицу из sessionStorage, если там есть данные.
+          */
+         function loadTableFromStorage() {
+              const savedData = sessionStorage.getItem(STORAGE_KEY);
+              if (!savedData) return; // Если данных нет, ничего не делаем
+ 
+              try {
+                  const data = JSON.parse(savedData);
+                  
+                  let rowsHtml = '';
+                  data.forEach(rowData => {
+                      const cellsHtml = rowData.map(cellData => `<td>${cellData}</td>`).join('');
+                      rowsHtml += `<tr>${cellsHtml}</tr>`;
+                  });
+ 
+                  tbody.innerHTML = rowsHtml;
+              } catch (e) {
+                  console.error("Ошибка при загрузке данных из sessionStorage:", e);
+              }
+          }
+     </script>
 </body>
 </html>
