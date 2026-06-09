@@ -1,49 +1,87 @@
-// Класс Book выводит книгу с заголовком, годом публикации и ценой
+/**
+ * Класс для создания объекта книги с приватной ценой, годом публикации и публичным заголовком.
+ * Заголовок (title) управляется через геттер и сеттер, но его внутреннее хранилище (_title) публично.
+ */
 class Book {
-    // Приватное поле price
+    /**
+     * Приватное поле для хранения цены.
+     * @private
+     */
     #price;
 
-    constructor(title, pubYear, price) {
-        let storedTitle;
-        Object.defineProperty(this, 'title', {
-            get() {
-                return storedTitle;
-            },
-            set(value) {
-                if (value === "") {
-                    throw new Error("Заголовок не может быть пустым");
-                }
-                storedTitle = value;
-            },
-            enumerable: true,
-            configurable: true
-        });
+    /**
+     * Приватное поле для хранения года публикации.
+     * @private
+     */
+    #pubYear;
 
-        // Инициализация через сеттеры
+    /**
+     * Создает экземпляр книги.
+     * @param {string} title - Заголовок книги. Не может быть пустой строкой.
+     * @param {number} pubYear - Год публикации. Должен быть положительным числом.
+     * @param {number} price - Цена книги. Должна быть положительным числом.
+     * @throws {Error} Если заголовок пуст, год или цена не являются положительными числами.
+     */
+    constructor(title, pubYear, price) {
+        // Используем сеттер для title, чтобы сработала валидация при создании объекта.
         this.title = title;
         this.pubYear = pubYear;
         this.#price = price;
     }
 
-    // Геттер для получения года публикации книги
-    get pubYear() {
-        return this._pubYear;
+    /**
+     * Геттер для получения заголовка книги.
+     * @returns {string} Заголовок книги.
+     */
+    get title() {
+        return this._title;
     }
 
-    // Сеттер для установки года публикации книги
+    /**
+     * Сеттер для установки заголовка книги.
+     * @param {string} value - Новый заголовок книги.
+     * @throws {Error} Если значение является пустой строкой.
+     */
+    set title(value) {
+        if (value === "") {
+            throw new Error("Заголовок не может быть пустым");
+        }
+        this._title = value;
+    }
+
+    /**
+     * Геттер для получения года публикации книги.
+     * @returns {number} Год публикации.
+     */
+    get pubYear() {
+        return this.#pubYear;
+    }
+
+    /**
+     * Сеттер для установки года публикации книги.
+     * @param {number} value - Новый год публикации.
+     * @throws {Error} Если значение не является положительным числом.
+     */
     set pubYear(value) {
         if (value <= 0) {
             throw new Error("Год публикации должен быть положительным числом");
         }
-        this._pubYear = value;
+        this.#pubYear = value;
     }
 
-    // Геттер для получения цены книги
+    /**
+     * Геттер для получения цены книги.
+     * @returns {number} Цена книги.
+     */
     get price() {
         return this.#price;
     }
 
-    // Сеттер для установки цены книги
+    /**
+     * Сеттер для установки цены книги.
+     * @param {number} value - Новая цена книги.
+     * @throws {Error} Если значение не является положительным числом.
+     */
     set price(value) {
         if (value <= 0) {
             throw new Error("Цена должна быть положительным числом");
@@ -51,65 +89,46 @@ class Book {
         this.#price = value;
     }
 
-    // Метод для вывода заголовка и цены книги в консоль
+    /**
+     * Метод для вывода заголовка и цены книги в консоль.
+     */
     show() {
         console.log(`${this.title}: ${this.#price}`);
     }
 
-    // Статический метод для сравнения книг по году публикации
+    /**
+     * Статический метод для сравнения книг по году публикации.
+     * Используется для сортировки массивов книг.
+     * @param {Book} a - Первая книга для сравнения.
+     * @param {Book} b - Вторая книга для сравнения.
+     * @returns {number} Разница между годами публикации (a.pubYear - b.pubYear).
+      */
     static compare(a, b) {
         return a.pubYear - b.pubYear;
     }
 }
 
-// Функция для проверки, пуст ли объект, включая неперечисляемые свойства
-function isEmpty(obj) {
-    return Object.getOwnPropertyNames(obj).length === 0 && Object.getOwnPropertySymbols(obj).length === 0;
-}
+// --- Пример использования класса ---
 
-// Объект с методами для работы с классами
-let obj = {
-    className: 'open menu',
-    // Метод для добавления класса, если его еще нет
-    addClass: function (cls) {
-        if (!this.className.split(' ').includes(cls)) {
-            this.className += ' ' + cls;
-        }
-        this.className = this.className.trim();
-        return this;
-    },
-    // Метод для удаления класса, если он существует
-    removeClass: function (cls) {
-        let classes = this.className.split(' ');
-        let index = classes.indexOf(cls);
-        if (index !== -1) {
-            classes.splice(index, 1);
-            this.className = classes.join(' ');
-        }
-        return this;
-    }
-};
+// 1. Создание экземпляра. Сеттер title будет вызван автоматически и выполнит валидацию.
+const myBook = new Book("Мастер и Маргарита", 1966, 1500);
 
-const jsonStr = JSON.stringify(obj, null, 2);
-console.log("JSON представление объекта obj:");
-console.log(jsonStr);
+// 2. Использование геттера title
+console.log("Текущий заголовок:", myBook.title); // Выведет: "Мастер и Маргарита"
+// В этот момент мы также можем напрямую обратиться к публичному полю _title:
+console.log("Прямой доступ к _title:", myBook._title); // Выведет: "Мастер и Маргарита"
 
-const obj2 = JSON.parse(jsonStr);
-console.log("Объект после декодирования:", obj2);
-console.log("Равенство className:", obj.className === obj2.className);
+// 3. Использование сеттера title
+myBook.title = "Собачье сердце";
+console.log("Новый заголовок через сеттер:", myBook.title); // Выведет: "Собачье сердце"
 
-// Функция для получения количества секунд с начала текущего дня
-function getSecondsToday() {
-    let now = new Date();
-    let today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    let diff = now - today;
-    return Math.floor(diff / 1000);
-}
+// 4. Прямое изменение публичного поля _title в обход сеттера
+myBook._title = ""; // Сеттер не вызывается, валидация не происходит!
+console.log("Заголовок после прямого изменения:", myBook.title); // Выведет пустую строку
 
-// Функция для форматирования даты в строку формата "дд.мм.гг"
-function formatDate(date) {
-    let day = date.getDate();
-    let month = date.getMonth() + 1;
-    let year = date.getFullYear().toString().substr(-2);
-    return `${day < 10 ? '0' + day : day}.${month < 10 ? '0' + month : month}.${year}`;
+// 5. Попытка установить пустой заголовок через сеттер (вызовет ошибку)
+try {
+    myBook.title = "";
+} catch (e) {
+    console.error(e.message); // Выведет: "Заголовок не может быть пустым"
 }
