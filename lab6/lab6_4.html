@@ -99,13 +99,13 @@
          
         const TABLE_ID = 'editable-table';
         const STORAGE_KEY = 'editableTableData'; // Ключ для sessionStorage
-        let tbody = null;
 
-        document.addEventListener('DOMContentLoaded', function () {
-            tbody = document.querySelector(`#${TABLE_ID} tbody`);
+         // Объявляем tbody здесь, чтобы он был доступен во всех функциях
+         const tbody = document.querySelector(`#${TABLE_ID} tbody`);
 
-            // 1. ЗАГРУЗКА ДАННЫХ ИЗ SESSIONSTORAGE
-            loadTableFromStorage();
+         document.addEventListener('DOMContentLoaded', function () {
+             // 1. ЗАГРУЗКА ДАННЫХ ИЗ SESSIONSTORAGE
+             loadTableFromStorage();
 
              // Если данных нет (первый визит), создаем начальную таблицу 6x7
              if (tbody.innerHTML.trim() === '') {
@@ -154,13 +154,9 @@
  
              td.querySelector('textarea').focus();
  
-             td.querySelector('.ok-button').addEventListener('click', function () {
-                  finishEditing(td, true);
-              });
- 
-              td.querySelector('.cancel-button').addEventListener('click', function () {
-                  finishEditing(td, false);
-              });
+             // Используем стрелочные функции, чтобы сохранить контекст `td`
+             td.querySelector('.ok-button').addEventListener('click', () => finishEditing(td, true));
+             td.querySelector('.cancel-button').addEventListener('click', () => finishEditing(td, false));
          }
  
          function finishEditing(td, isSave) {
