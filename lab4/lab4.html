@@ -214,9 +214,9 @@
         });
 
         describe("formatDate", function () {
-            it("let date = new Date(2026, 8, 15);=> 15.08.26", function () {
-                let date = new Date(2026, 8, 15);
-                assert.strictEqual(formatDate(date), "15.08.26");
+            it("let date = new Date(2023, 0, 1);=> 01.01.23", function () {
+                let date = new Date(2023, 0, 1);
+                assert.strictEqual(formatDate(date), "01.01.23");
                 console.log("Форматированная дата: " + formatDate(date));
             });
         });
