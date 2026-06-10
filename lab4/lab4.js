@@ -1,124 +1,127 @@
+
 /**
- * Класс для создания объекта книги с приватной ценой, годом публикации и публичным заголовком.
+ * Класс для представления книги с валидацией полей.
+ * @class
  */
 class Book {
+    /**
+     * Приватное поле для хранения цены.
+     * @private
+     */
     #price;
-    #pubYear;
 
     /**
      * Создает экземпляр книги.
-     * @param {string} title - Заголовок книги. Не может быть пустой строкой.
-     * @param {number} pubYear - Год публикации. Должен быть положительным числом.
-     * @param {number} price - Цена книги. Должна быть положительным числом.
-     * @throws {Error} Если данные не проходят валидацию.
+     * @param {string} title - Заголовок книги (не может быть пустой строкой).
+     * @param {number} pubYear - Год публикации (должен быть положительным числом).
+     * @param {number} price - Цена книги (должна быть положительным числом).
      */
     constructor(title, pubYear, price) {
-        this.title = title; // Используем сеттер для валидации
-        this.pubYear = pubYear; // Используем сеттер для валидации
-        this.price = price;   // Используем сеттер для валидации
+        let storedTitle;
+        Object.defineProperty(this, 'title', {
+            get() {
+                return storedTitle;
+            },
+            set(value) {
+                if (value === "") {
+                    throw new Error("Заголовок не может быть пустым");
+                }
+                storedTitle = value;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        this.title = title;
+        this.pubYear = pubYear;
+        this.#price = price;
     }
 
-    get title() {
-        return this._title;
-    }
-
-    set title(value) {
-        if (value === "") {
-            throw new Error("Заголовок не может быть пустым");
-        }
-        this._title = value;
-    }
-
+    /**
+     * Получает год публикации книги.
+     * @returns {number} Год публикации.
+     */
     get pubYear() {
-        return this.#pubYear;
+        return this._pubYear;
     }
 
+    /**
+     * Устанавливает год публикации книги с валидацией.
+     * @param {number} value - Новый год публикации.
+     */
     set pubYear(value) {
-        if (typeof value !== 'number' || value <= 0) {
+        if (value <= 0) {
             throw new Error("Год публикации должен быть положительным числом");
         }
-        this.#pubYear = value;
+        this._pubYear = value;
     }
 
+    /**
+     * Получает цену книги.
+     * @returns {number} Цена книги.
+     */
     get price() {
         return this.#price;
     }
 
+    /**
+     * Устанавливает цену книги с валидацией.
+     * @param {number} value - Новая цена книги.
+     */
     set price(value) {
-        if (typeof value !== 'number' || value <= 0) {
+        if (value <= 0) {
             throw new Error("Цена должна быть положительным числом");
         }
         this.#price = value;
     }
 
+    /**
+     * Выводит заголовок и цену книги в консоль.
+     */
     show() {
         console.log(`${this.title}: ${this.#price}`);
     }
 
+    /**
+     * Статический метод для сравнения двух книг по году публикации.
+     * @static
+     * @param {Book} a - Первая книга.
+     * @param {Book} b - Вторая книга.
+     * @returns {number} Разница лет (a.pubYear - b.pubYear).
+     */
     static compare(a, b) {
         return a.pubYear - b.pubYear;
     }
-
-  
-    /**
-     * Добавляет CSS-класс к строке классов книги.
-     * @param {string} cls - Имя класса для добавления.
-     * @returns {string} Обновленная строка классов.
-     */
-    addClass(cls) {
-        let arr = this.className.trim().split(/\s+/);
-        if (!arr.includes(cls)) {
-            arr.push(cls);
-            this.className = arr.join(' ');
-        }
-        return this.className;
-    }
-
-    /**
-     * Удаляет CSS-класс из строки классов книги.
-     * @param {string} cls - Имя класса для удаления.
-     * @returns {string} Обновленная строка классов.
-     */
-    removeClass(cls) {
-        let arr = this.className.trim().split(/\s+/);
-        let idx = arr.indexOf(cls);
-        if (idx !== -1) {
-            arr.splice(idx, 1);
-            this.className = arr.join(' ');
-        }
-        return this.className;
-    }
 }
 
-// --- ТЕСТИРОВАНИЕ ФУНКЦИЙ ---
+/**
+ * Проверяет, является ли объект пустым, включая неперечисляемые свойства и символы.
+ * @param {Object} obj - Проверяемый объект.
+ * @returns {boolean} True, если объект пуст, иначе false.
+ */unction isEmpty(obj) {
+    return Object.getOwnPropertyNames(obj).length === 0 && Object.getOwnPropertySymbols(obj).length === 0;
+}
 
-console.log("--- Тестирование isEmpty ---");
-let schedule = {};
-console.log(isEmpty(schedule)); // true
+/**
+ * Возвращает количество секунд, прошедших с начала текущего дня.
+ * @returns {number} Секунды с полуночи.
+ */unction getSecondsToday() {
+    let now = new Date();
+    let today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    let diff = now - today;
+    return Math.floor(diff / 1000);
+}
 
-schedule["8:30"] = "подъём";
-console.log(isEmpty(schedule)); // false
-
-Object.defineProperty(schedule, "nonEnum", {
-    value: "невидимое свойство",
-    enumerable: false
-});
-console.log(isEmpty(schedule)); // false, т.к. есть собственное свойство (хоть и неперечисляемое)
-
-console.log("\n--- Тестирование методов работы со строками ---");
-let obj = { className: 'open menu' };
-obj.addClass('newClass');
-console.log(obj.className); // 'open menu newClass'
-
-obj.addClass('open'); 
-console.log(obj.className); // 'open menu newClass'
-
-obj.removeClass('open');
-console.log(obj.className); // 'menu newClass'
-
-console.log("\n--- Тестирование функций даты ---");
-console.log(getSecondsToday()); // Текущее количество секунд с начала дня
-
-const dateToFormat = new Date(2006, 8, 15);
-console.log(formatDate(dateToFormat));
-
+/**
+ * Форматирует объект Date в строку формата "дд.мм.гг" (например, 15.09.06).
+ * @param {Date} date - Объект даты для форматирования.
+ * @returns {string} Отформатированная строка даты.
+ */unction formatDate(date) {
+    let day = date.getDate();
+s    let month = date.getMonth() + 1; // Месяцы с 0 до 11
+    let year = date.getFullYear().toString().substr(-2);
+s    return `${day < 10 ? '0' + day : day}.${month < 10 ? '0' + month : month}.${year}`;
+s}
+s
+// Пример использования форматирования даты:
+slet date = new Date(2006, 8, 15); // Сентябрь — это 8-й месяц (индексация с 0)
+sconsole.log(formatDate(date)); // Выведет: 15.09.06
