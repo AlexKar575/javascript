@@ -1,18 +1,8 @@
 /**
  * Класс для создания объекта книги с приватной ценой, годом публикации и публичным заголовком.
- * Заголовок (title) управляется через геттер и сеттер, но его внутреннее хранилище (_title) публично.
  */
 class Book {
-    /**
-     * Приватное поле для хранения цены.
-     * @private
-     */
     #price;
-
-    /**
-     * Приватное поле для хранения года публикации.
-     * @private
-     */
     #pubYear;
 
     /**
@@ -20,28 +10,18 @@ class Book {
      * @param {string} title - Заголовок книги. Не может быть пустой строкой.
      * @param {number} pubYear - Год публикации. Должен быть положительным числом.
      * @param {number} price - Цена книги. Должна быть положительным числом.
-     * @throws {Error} Если заголовок пуст, год или цена не являются положительными числами.
+     * @throws {Error} Если данные не проходят валидацию.
      */
     constructor(title, pubYear, price) {
-        // Используем сеттер для title, чтобы сработала валидация при создании объекта.
-        this.title = title;
-        this.pubYear = pubYear;
-        this.#price = price;
+        this.title = title; // Используем сеттер для валидации
+        this.pubYear = pubYear; // Используем сеттер для валидации
+        this.price = price;   // Используем сеттер для валидации
     }
 
-    /**
-     * Геттер для получения заголовка книги.
-     * @returns {string} Заголовок книги.
-     */
     get title() {
         return this._title;
     }
 
-    /**
-     * Сеттер для установки заголовка книги.
-     * @param {string} value - Новый заголовок книги.
-     * @throws {Error} Если значение является пустой строкой.
-     */
     set title(value) {
         if (value === "") {
             throw new Error("Заголовок не может быть пустым");
@@ -49,86 +29,96 @@ class Book {
         this._title = value;
     }
 
-    /**
-     * Геттер для получения года публикации книги.
-     * @returns {number} Год публикации.
-     */
     get pubYear() {
         return this.#pubYear;
     }
 
-    /**
-     * Сеттер для установки года публикации книги.
-     * @param {number} value - Новый год публикации.
-     * @throws {Error} Если значение не является положительным числом.
-     */
     set pubYear(value) {
-        if (value <= 0) {
+        if (typeof value !== 'number' || value <= 0) {
             throw new Error("Год публикации должен быть положительным числом");
         }
         this.#pubYear = value;
     }
 
-    /**
-     * Геттер для получения цены книги.
-     * @returns {number} Цена книги.
-     */
     get price() {
         return this.#price;
     }
 
-    /**
-     * Сеттер для установки цены книги.
-     * @param {number} value - Новая цена книги.
-     * @throws {Error} Если значение не является положительным числом.
-     */
     set price(value) {
-        if (value <= 0) {
+        if (typeof value !== 'number' || value <= 0) {
             throw new Error("Цена должна быть положительным числом");
         }
         this.#price = value;
     }
 
-    /**
-     * Метод для вывода заголовка и цены книги в консоль.
-     */
     show() {
         console.log(`${this.title}: ${this.#price}`);
     }
 
-    /**
-     * Статический метод для сравнения книг по году публикации.
-     * Используется для сортировки массивов книг.
-     * @param {Book} a - Первая книга для сравнения.
-     * @param {Book} b - Вторая книга для сравнения.
-     * @returns {number} Разница между годами публикации (a.pubYear - b.pubYear).
-      */
     static compare(a, b) {
         return a.pubYear - b.pubYear;
     }
+
+  
+    /**
+     * Добавляет CSS-класс к строке классов книги.
+     * @param {string} cls - Имя класса для добавления.
+     * @returns {string} Обновленная строка классов.
+     */
+    addClass(cls) {
+        let arr = this.className.trim().split(/\s+/);
+        if (!arr.includes(cls)) {
+            arr.push(cls);
+            this.className = arr.join(' ');
+        }
+        return this.className;
+    }
+
+    /**
+     * Удаляет CSS-класс из строки классов книги.
+     * @param {string} cls - Имя класса для удаления.
+     * @returns {string} Обновленная строка классов.
+     */
+    removeClass(cls) {
+        let arr = this.className.trim().split(/\s+/);
+        let idx = arr.indexOf(cls);
+        if (idx !== -1) {
+            arr.splice(idx, 1);
+            this.className = arr.join(' ');
+        }
+        return this.className;
+    }
 }
 
-// --- Пример использования класса ---
+// --- ТЕСТИРОВАНИЕ ФУНКЦИЙ ---
 
-// 1. Создание экземпляра. Сеттер title будет вызван автоматически и выполнит валидацию.
-const myBook = new Book("Мастер и Маргарита", 1966, 1500);
+console.log("--- Тестирование isEmpty ---");
+let schedule = {};
+console.log(isEmpty(schedule)); // true
 
-// 2. Использование геттера title
-console.log("Текущий заголовок:", myBook.title); // Выведет: "Мастер и Маргарита"
-// В этот момент мы также можем напрямую обратиться к публичному полю _title:
-console.log("Прямой доступ к _title:", myBook._title); // Выведет: "Мастер и Маргарита"
+schedule["8:30"] = "подъём";
+console.log(isEmpty(schedule)); // false
 
-// 3. Использование сеттера title
-myBook.title = "Собачье сердце";
-console.log("Новый заголовок через сеттер:", myBook.title); // Выведет: "Собачье сердце"
+Object.defineProperty(schedule, "nonEnum", {
+    value: "невидимое свойство",
+    enumerable: false
+});
+console.log(isEmpty(schedule)); // false, т.к. есть собственное свойство (хоть и неперечисляемое)
 
-// 4. Прямое изменение публичного поля _title в обход сеттера
-myBook._title = ""; // Сеттер не вызывается, валидация не происходит!
-console.log("Заголовок после прямого изменения:", myBook.title); // Выведет пустую строку
+console.log("\n--- Тестирование методов работы со строками ---");
+let obj = { className: 'open menu' };
+obj.addClass('newClass');
+console.log(obj.className); // 'open menu newClass'
 
-// 5. Попытка установить пустой заголовок через сеттер (вызовет ошибку)
-try {
-    myBook.title = "";
-} catch (e) {
-    console.error(e.message); // Выведет: "Заголовок не может быть пустым"
-}
+obj.addClass('open'); 
+console.log(obj.className); // 'open menu newClass'
+
+obj.removeClass('open');
+console.log(obj.className); // 'menu newClass'
+
+console.log("\n--- Тестирование функций даты ---");
+console.log(getSecondsToday()); // Текущее количество секунд с начала дня
+
+const dateToFormat = new Date(2006, 8, 15);
+console.log(formatDate(dateToFormat));
+
